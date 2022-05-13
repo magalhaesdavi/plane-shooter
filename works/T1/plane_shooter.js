@@ -1,5 +1,6 @@
 import * as THREE from  'three';
 import { OrbitControls } from '../../build/jsm/controls/OrbitControls.js';
+import KeyboardState from '../../libs/util/KeyboardState.js';  
 import {
 	initRenderer, 
 	initCamera,
@@ -29,7 +30,7 @@ class Game {
     this.scene.add(this.cameraHolder);
   }
 
-  reset(airplane, scenario) {
+  init(airplane, scenario) {
     this.camera.lookAt(0, 0, 0);
     this.camera.up.set( 0, 1, 0 );
     this.cameraHolder.position.set(0, 70, 91);
@@ -40,6 +41,15 @@ class Game {
     this.scene.add(airplane.cone);
     airplane.cone.position.set(0, 5, 50);
     airplane.cone.rotateX(degreesToRadians(-90));    
+  }
+
+  reset(airplane, scenario) {
+    this.camera.lookAt(0, 0, 0);
+    this.camera.up.set( 0, 1, 0 );
+    this.cameraHolder.position.set(0, 70, 91);
+    
+    this.scene.add(airplane.cone);
+    airplane.cone.position.set(0, 5, 50);
   }
 
   start() {
@@ -63,28 +73,45 @@ window.addEventListener(
 let axesHelper = new THREE.AxesHelper( 12 );
 game.scene.add( axesHelper );
 
+// To use the keyboard
+let keyboard = new KeyboardState();
+
 // create the ground plane
 let main_scenario = new Scenario(400, 400);
 // Create plane
 let airplane = new Airplane();
 
-game.reset(airplane, main_scenario);
+game.init(airplane, main_scenario);
 //game.start()
 
 let speed = 1;
 
 let controls = new InfoBox();
-  controls.add("Basic Scene");
+  controls.add("Plane Shooter");
   controls.addParagraph();
-  controls.add("Use mouse to interact:");
-  controls.add("* Left button to rotate");
-  controls.add("* Right button to translate (pan)");
-  controls.add("* Scroll to zoom in/out.");
+  controls.add("Use keyboard to interact:");
+  controls.add("* Space to start/pause");
+  controls.add("* R to reset the game");
   controls.show();
 
 render();
+
+function keyboardUpdate() {
+
+  keyboard.update();
+
+  var angle = degreesToRadians(1);
+
+  if ( keyboard.pressed("space") )
+    game.running = !game.running;
+  if ( keyboard.pressed("R") )
+    game.reset(airplane, main_scenario);
+
+}
+
 function render()
 {
+  keyboardUpdate();
   if (game.running) {
     airplane.move(speed);
     game.cameraHolder.position.z -= speed;
