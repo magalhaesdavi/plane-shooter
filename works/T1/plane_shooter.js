@@ -101,11 +101,30 @@ function keyboardUpdate() {
 
   keyboard.update();
 
-  if ( keyboard.down("space") )
+  if ( keyboard.down("space") ) {
     game.running = !game.running;
+  }
   if ( keyboard.pressed("R") ) {
     main_scenario.reset();
     game.reset(airplane, main_scenario);
+  }
+
+  // Airplane controls
+  if ( keyboard.pressed("left") && game.running) {
+    if ((airplane.cone.position.x - game.cameraHolder.position.x) > -70 )
+      airplane.cone.translateX(-1);
+  }
+  if ( keyboard.pressed("right") && game.running ) {
+    if ((airplane.cone.position.x - game.cameraHolder.position.x) < 70 )
+      airplane.cone.translateX(1);
+  }
+  if ( keyboard.pressed("up") && game.running ) {
+    if ((airplane.cone.position.z - game.cameraHolder.position.z) > -200 )
+      airplane.cone.translateY(1);
+  }
+  if ( keyboard.pressed("down") && game.running ) {
+    if ((airplane.cone.position.z - game.cameraHolder.position.z) < -40 )
+      airplane.cone.translateY(-1);
   }
 
 }
