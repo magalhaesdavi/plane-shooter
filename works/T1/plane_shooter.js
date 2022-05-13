@@ -36,7 +36,8 @@ class Game {
     this.cameraHolder.position.set(0, 70, 91);
     this.cameraHolder.rotateX(degreesToRadians(-40));
     
-    this.scene.add(main_scenario.plane);
+    this.scene.add(scenario.plane);
+    this.scene.add(scenario.second_plane);
     
     this.scene.add(airplane.cone);
     airplane.cone.position.set(0, 5, 50);
@@ -100,12 +101,12 @@ function keyboardUpdate() {
 
   keyboard.update();
 
-  var angle = degreesToRadians(1);
-
-  if ( keyboard.pressed("space") )
+  if ( keyboard.down("space") )
     game.running = !game.running;
-  if ( keyboard.pressed("R") )
+  if ( keyboard.pressed("R") ) {
+    main_scenario.reset();
     game.reset(airplane, main_scenario);
+  }
 
 }
 
@@ -115,6 +116,7 @@ function render()
   if (game.running) {
     airplane.move(speed);
     game.cameraHolder.position.z -= speed;
+    main_scenario.update(game.cameraHolder);
   }
   requestAnimationFrame(render);
   game.renderer.render(game.scene, game.camera) // Render scene
