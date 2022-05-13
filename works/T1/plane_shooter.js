@@ -12,7 +12,7 @@ import {
 } from "../../libs/util/util.js";
 
 import { Scenario } from './scenario.js';
-import { Plane } from './plane.js';
+import { Airplane } from './plane.js';
 
 class Game {
   constructor() {
@@ -29,7 +29,7 @@ class Game {
     this.scene.add(this.cameraHolder);
   }
 
-  init(plane, scenario) {
+  init(airplane, scenario) {
     this.camera.lookAt(0, 0, 0);
     this.camera.up.set( 0, 1, 0 );
     this.cameraHolder.position.set(0, 70, 91);
@@ -37,9 +37,9 @@ class Game {
     
     this.scene.add(main_scenario.plane);
     
-    this.scene.add(plane.cone);
-    plane.cone.position.set(0, 5, 50);
-    plane.cone.rotateX(degreesToRadians(-90));    
+    this.scene.add(airplane.cone);
+    airplane.cone.position.set(0, 5, 50);
+    airplane.cone.rotateX(degreesToRadians(-90));    
   }
 }
 
@@ -59,9 +59,9 @@ game.scene.add( axesHelper );
 let main_scenario = new Scenario(400, 400);
 
 // Create plane
-let plane = new Plane();
+let airplane = new Airplane();
 
-game.init(plane, main_scenario);
+game.init(airplane, main_scenario);
 
 
 let controls = new InfoBox();

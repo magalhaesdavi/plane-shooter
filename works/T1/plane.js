@@ -4,7 +4,7 @@ import * as THREE from  'three';
     Classe referente ao objeto que controla as
     funcionalidades do avião.
 */}
-export class Plane {
+export class Airplane {
     constructor() {
         this.geometry = new THREE.ConeGeometry( 2, 3, 32 );
         this.material = new THREE.MeshBasicMaterial();
