@@ -28,6 +28,24 @@ class Game {
     this.cameraHolder.add(this.camera);
     this.scene.add(this.cameraHolder);
   }
+
+  init() {
+    this.camera.lookAt(0, 0, 0);
+    this.camera.up.set( 0, 1, 0 );
+    this.cameraHolder.position.set(0, 70, 91);
+    this.cameraHolder.rotateX(degreesToRadians(-40));
+    
+    
+    // create the ground plane
+    let main_scenario = new Scenario(400, 400);
+    this.scene.add(main_scenario.plane);
+    
+    // Create plane
+    let plane = new Plane();
+    this.scene.add(plane.cone);
+    plane.cone.position.set(0, 5, 50);
+    plane.cone.rotateX(degreesToRadians(-90));    
+  }
 }
 
 let game = new Game();
@@ -43,22 +61,7 @@ let axesHelper = new THREE.AxesHelper( 12 );
 game.scene.add( axesHelper );
 
 
-game.camera.lookAt(0, 0, 0);
-game.camera.up.set( 0, 1, 0 );
-game.cameraHolder.position.set(0, 70, 91);
-game.cameraHolder.rotateX(degreesToRadians(-40));
-
-
-// create the ground plane
-let main_scenario = new Scenario(400, 400);
-game.scene.add(main_scenario.plane);
-
-// Create plane
-let plane = new Plane();
-game.scene.add(plane.cone);
-plane.cone.position.set(0, 5, 50);
-plane.cone.rotateX(degreesToRadians(-90));
-
+game.init();
 
 
 let controls = new InfoBox();
