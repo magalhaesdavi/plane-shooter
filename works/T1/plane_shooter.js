@@ -7,34 +7,41 @@ import {
 	initBasicMaterial,
 	InfoBox,
 	onWindowResize,
-	createGroundPlaneXZ,
 	createGroundPlaneWired
 } from "../../libs/util/util.js";
 
-let scene, renderer, camera, material, light, orbit; // variables 
-scene = new THREE.Scene();    // Create main scene
-renderer = initRenderer();    // Init a basic renderer
-camera = initCamera(new THREE.Vector3(0, 15, 30)); // Init camera in this position
-material = initBasicMaterial(); // create a basic material
-light = initDefaultBasicLight(scene); // Create a basic light to illuminate the scene
-orbit = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotation, pan, zoom etc.
+import { Scenario } from './scenario.js';
+
+class Game {
+  constructor() {
+    this.scene = new THREE.Scene();    // Create main scene
+    this.renderer = initRenderer();    // Init a basic renderer
+    this.camera = initCamera(new THREE.Vector3(0, 15, 30)); // Init camera in this position
+    this.light = initDefaultBasicLight(this.scene); // Create a basic light to illuminate the scene
+    this.orbit = new OrbitControls( this.camera, this.renderer.domElement ); // Enable mouse rotation, pan, zoom etc.  
+  }
+}
+
+let plane_game = new Game();
+
+let material = initBasicMaterial(); // create a basic material
 
 // Listen window size changes
-window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
+window.addEventListener( 'resize', function(){onWindowResize(plane_game.camera, plane_game.renderer)}, false );
 
 // Show axes (parameter is size of each axis)
 let axesHelper = new THREE.AxesHelper( 12 );
-scene.add( axesHelper );
+plane_game.scene.add( axesHelper );
 
 // create the ground plane
-let plane = createGroundPlaneWired(20, 20);
-scene.add(plane);
+let main_scenario = new Scenario(40, 40);
+plane_game.scene.add(main_scenario.plane);
 
 // create a cube
 let cubeGeometry = new THREE.BoxGeometry(4, 4, 4);
 let cube = new THREE.Mesh(cubeGeometry, material);
 cube.position.set(0.0, 2.0, 0.0);
-scene.add(cube);
+plane_game.scene.add(cube);
 
 let controls = new InfoBox();
   controls.add("Basic Scene");
@@ -49,5 +56,5 @@ render();
 function render()
 {
   requestAnimationFrame(render);
-  renderer.render(scene, camera) // Render scene
+  plane_game.renderer.render(plane_game.scene, plane_game.camera) // Render scene
 }
