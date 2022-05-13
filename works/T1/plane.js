@@ -10,4 +10,8 @@ export class Airplane {
         this.material = new THREE.MeshBasicMaterial();
         this.cone = new THREE.Mesh( this.geometry, this.material );
     }
+
+    move(speed) {
+        this.cone.translateY(speed);
+    }
 }
