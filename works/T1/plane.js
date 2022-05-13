@@ -15,3 +15,18 @@ export class Airplane {
         this.cone.translateY(speed);
     }
 }
+
+{/**
+    Classe referente ao objeto que controla as
+    funcionalidades dos projetes que o avião atira'.
+*/}
+export class Bullet {
+    constructor() {
+        //TODO: Implementar criação de projétil
+        return;
+    }
+    create() {
+        //TODO: Implementar geração de projétil no jogo
+        return;
+    }
+}
