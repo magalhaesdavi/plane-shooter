@@ -29,19 +29,14 @@ class Game {
     this.scene.add(this.cameraHolder);
   }
 
-  init() {
+  init(plane, scenario) {
     this.camera.lookAt(0, 0, 0);
     this.camera.up.set( 0, 1, 0 );
     this.cameraHolder.position.set(0, 70, 91);
     this.cameraHolder.rotateX(degreesToRadians(-40));
     
-    
-    // create the ground plane
-    let main_scenario = new Scenario(400, 400);
     this.scene.add(main_scenario.plane);
     
-    // Create plane
-    let plane = new Plane();
     this.scene.add(plane.cone);
     plane.cone.position.set(0, 5, 50);
     plane.cone.rotateX(degreesToRadians(-90));    
@@ -60,8 +55,13 @@ window.addEventListener(
 let axesHelper = new THREE.AxesHelper( 12 );
 game.scene.add( axesHelper );
 
+// create the ground plane
+let main_scenario = new Scenario(400, 400);
 
-game.init();
+// Create plane
+let plane = new Plane();
+
+game.init(plane, main_scenario);
 
 
 let controls = new InfoBox();
