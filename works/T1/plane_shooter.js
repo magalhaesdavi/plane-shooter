@@ -29,7 +29,7 @@ class Game {
     this.scene.add(this.cameraHolder);
   }
 
-  init(airplane, scenario) {
+  reset(airplane, scenario) {
     this.camera.lookAt(0, 0, 0);
     this.camera.up.set( 0, 1, 0 );
     this.cameraHolder.position.set(0, 70, 91);
@@ -40,6 +40,14 @@ class Game {
     this.scene.add(airplane.cone);
     airplane.cone.position.set(0, 5, 50);
     airplane.cone.rotateX(degreesToRadians(-90));    
+  }
+
+  start() {
+    this.running = true;
+  }
+
+  update() {
+    return;
   }
 }
 
@@ -57,12 +65,13 @@ game.scene.add( axesHelper );
 
 // create the ground plane
 let main_scenario = new Scenario(400, 400);
-
 // Create plane
 let airplane = new Airplane();
 
-game.init(airplane, main_scenario);
+game.reset(airplane, main_scenario);
+//game.start()
 
+let speed = 1;
 
 let controls = new InfoBox();
   controls.add("Basic Scene");
@@ -76,6 +85,10 @@ let controls = new InfoBox();
 render();
 function render()
 {
+  if (game.running) {
+    airplane.move(speed);
+    game.cameraHolder.position.z -= speed;
+  }
   requestAnimationFrame(render);
   game.renderer.render(game.scene, game.camera) // Render scene
 }
