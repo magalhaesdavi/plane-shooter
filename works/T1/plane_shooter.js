@@ -7,6 +7,7 @@ import {
 	initBasicMaterial,
 	InfoBox,
 	onWindowResize,
+  degreesToRadians,
 	createGroundPlaneWired
 } from "../../libs/util/util.js";
 
@@ -18,38 +19,47 @@ class Game {
     this.running = false;
     this.scene = new THREE.Scene();    // Create main scene
     this.renderer = initRenderer();    // Init a basic renderer
-    this.camera = initCamera(new THREE.Vector3(0, 15, 30)); // Init camera in this position
+    this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000); // Init camera in this position
     this.light = initDefaultBasicLight(this.scene); // Create a basic light to illuminate the scene
-    this.orbit = new OrbitControls( this.camera, this.renderer.domElement ); // Enable mouse rotation, pan, zoom etc.  
+    //this.orbit = new OrbitControls( this.camera, this.renderer.domElement ); // Enable mouse rotation, pan, zoom etc.  
+
+    // Creating a holder for the camera
+    this.cameraHolder = new THREE.Object3D();
+    this.cameraHolder.add(this.camera);
+    this.scene.add(this.cameraHolder);
   }
 }
 
 let game = new Game();
 
 // Listen window size changes
-window.addEventListener( 'resize', function(){onWindowResize(game.camera, game.renderer)}, false );
-
-let material = initBasicMaterial(); // create a basic material
-
+window.addEventListener(
+  'resize',
+  function(){ onWindowResize(game.camera, game.renderer) },
+  false 
+);
 // Show axes (parameter is size of each axis)
 let axesHelper = new THREE.AxesHelper( 12 );
 game.scene.add( axesHelper );
 
+
+game.camera.lookAt(0, 0, 0);
+game.camera.up.set( 0, 1, 0 );
+game.cameraHolder.position.set(0, 70, 91);
+game.cameraHolder.rotateX(degreesToRadians(-40));
+
+
 // create the ground plane
-let main_scenario = new Scenario(50, 50);
+let main_scenario = new Scenario(400, 400);
 game.scene.add(main_scenario.plane);
 
 // Create plane
 let plane = new Plane();
 game.scene.add(plane.cone);
+plane.cone.position.set(0, 5, 50);
+plane.cone.rotateX(degreesToRadians(-90));
 
-// create a cube
-/*
-let cubeGeometry = new THREE.BoxGeometry(4, 4, 4);
-let cube = new THREE.Mesh(cubeGeometry, material);
-cube.position.set(0.0, 2.0, 0.0);
-game.scene.add(cube);
-*/
+
 
 let controls = new InfoBox();
   controls.add("Basic Scene");
