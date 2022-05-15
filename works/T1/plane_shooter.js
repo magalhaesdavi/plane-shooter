@@ -45,8 +45,6 @@ class Game {
   }
 
   reset(airplane, scenario) {
-    this.camera.lookAt(0, 0, 0);
-    this.camera.up.set( 0, 1, 0 );
     this.cameraHolder.position.set(0, 70, 91);
     
     this.scene.add(airplane.cone);
@@ -78,7 +76,7 @@ game.scene.add( axesHelper );
 let keyboard = new KeyboardState();
 
 // create the ground plane
-let main_scenario = new Scenario(400, 400);
+let main_scenario = new Scenario(600, 600);
 // Create plane
 let airplane = new Airplane();
 
