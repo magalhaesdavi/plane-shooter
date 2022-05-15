@@ -1,4 +1,5 @@
 import * as THREE from  'three';
+import { degreesToRadians } from '../../libs/util/util.js';
 
 {/**
     Classe referente ao objeto que controla as
@@ -13,6 +14,13 @@ export class Airplane {
 
     move(speed) {
         this.cone.translateY(speed);
+    }
+
+    setInitialOrResetPosition(initial = true) {
+        this.cone.position.set(0, 5, 50);
+        if (initial) {
+            this.cone.rotateX(degreesToRadians(-90));
+        }
     }
 }
 

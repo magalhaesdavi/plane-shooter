@@ -40,15 +40,14 @@ class Game {
     this.scene.add(scenario.second_ground_plane);
     
     this.scene.add(airplane.cone);
-    airplane.cone.position.set(0, 5, 50);
-    airplane.cone.rotateX(degreesToRadians(-90));    
+    airplane.setInitialOrResetPosition();
   }
 
   reset(airplane, scenario) {
     this.cameraHolder.position.set(0, 70, 91);
     
     this.scene.add(airplane.cone);
-    airplane.cone.position.set(0, 5, 50);
+    airplane.setInitialOrResetPosition(false);
   }
 
   start() {
