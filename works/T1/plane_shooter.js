@@ -36,8 +36,8 @@ class Game {
     this.cameraHolder.position.set(0, 70, 91);
     this.cameraHolder.rotateX(degreesToRadians(-40));
     
-    this.scene.add(scenario.plane);
-    this.scene.add(scenario.second_plane);
+    this.scene.add(scenario.ground_plane);
+    this.scene.add(scenario.second_ground_plane);
     
     this.scene.add(airplane.cone);
     airplane.cone.position.set(0, 5, 50);
