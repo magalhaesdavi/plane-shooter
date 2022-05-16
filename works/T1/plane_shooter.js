@@ -15,6 +15,8 @@ import {
 import { Scenario } from './scenario.js';
 import { Airplane } from './plane.js';
 
+const SPEED = 1;
+
 class Game {
   constructor() {
     this.running = false;
@@ -74,15 +76,14 @@ game.scene.add( axesHelper );
 // To use the keyboard
 let keyboard = new KeyboardState();
 
-// create the ground plane
+// Create the ground plane
 let main_scenario = new Scenario(600, 600);
 // Create plane
 let airplane = new Airplane();
 
+// Initializing the game
 game.init(airplane, main_scenario);
 //game.start()
-
-let speed = 1;
 
 let controls = new InfoBox();
   controls.add("Plane Shooter");
@@ -130,8 +131,8 @@ function render()
 {
   keyboardUpdate();
   if (game.running) {
-    airplane.move(speed);
-    game.cameraHolder.position.z -= speed;
+    airplane.move(SPEED);
+    game.cameraHolder.position.z -= SPEED;
     main_scenario.update(game.cameraHolder);
   }
   requestAnimationFrame(render);

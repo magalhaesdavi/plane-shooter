@@ -22,6 +22,10 @@ export class Airplane {
             this.cone.rotateX(degreesToRadians(-90));
         }
     }
+
+    atirar() {
+        
+    }
 }
 
 {/**
