@@ -7,8 +7,23 @@ import * as THREE from  'three';
     funcionalidades de um inimigo'.
 */}
 export class Enemy {
-    constructor () {
+    constructor(speed) {
+        this.geometry = new THREE.BoxGeometry( 1, 1, 1 );
+        this.material = new THREE.MeshBasicMaterial();
+        this.cube = new THREE.Mesh( this.geometry, this.material );
+        this.speed = speed
         return;
+    }
+
+    //Define posicao do cubo
+    setPosition(x, y, z) {
+        this.cube.position.set(x, y, z)
+        return;
+    }
+
+    //Movimenta com base em sua velocidade
+    update() {
+        this.cube.translateZ(this.speed);
     }
 }
 

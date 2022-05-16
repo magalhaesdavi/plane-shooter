@@ -1,4 +1,4 @@
-import * as THREE from  'three';
+import * as THREE from 'three';
 import { OrbitControls } from '../../build/jsm/controls/OrbitControls.js';
 import KeyboardState from '../../libs/util/KeyboardState.js';  
 import {
@@ -14,8 +14,10 @@ import {
 
 import { Scenario } from './scenario.js';
 import { Airplane } from './plane.js';
+import { Enemy } from './enemies.js';
 
 const SPEED = 1;
+var enemies = [];
 
 class Game {
   constructor() {
@@ -56,8 +58,17 @@ class Game {
     this.running = true;
   }
 
+  //Adiciona novos inimigos em tempo de jogo com posicao e velocidade aleatórias
   update() {
-    return;
+    if (Math.random() > 0.9) {
+			var temp = new Enemy(Math.random() * 3);
+			temp.setPosition(Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1), 5,
+                       airplane.cone.position.z - 150);
+			enemies.push(temp)
+		}
+    for(var i = 0; i < enemies.length; i++) {
+        this.scene.add(enemies[i].cube)
+    }
   }
 }
 
@@ -134,6 +145,12 @@ function render()
     airplane.move(SPEED);
     game.cameraHolder.position.z -= SPEED;
     main_scenario.update(game.cameraHolder);
+    game.update();
+
+    //Movimento dos inimigos
+    for(var i = 0; i < enemies.length; i++) {
+        enemies[i].update();
+    }
   }
   requestAnimationFrame(render);
   game.renderer.render(game.scene, game.camera) // Render scene
