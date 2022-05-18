@@ -20,11 +20,18 @@ var enemies = [];
 let bullets = [];
 
 const resetBullets = () => {
-  bullets.forEach(element => {
-    game.scene.remove(element.sphere);
+  bullets.forEach(bullet => {
+    game.scene.remove(bullet.sphere);
   });
   bullets = [];
 };
+
+const resetEnemies = () => {
+  enemies.forEach(enemy => {
+    game.scene.remove(enemy.cube);
+  });
+  enemies = [];
+}
 
 class Game {
   constructor() {
@@ -132,6 +139,7 @@ function keyboardUpdate() {
     main_scenario.reset();
     game.reset(airplane, main_scenario);
     resetBullets();
+    resetEnemies();
   }
 
   // Airplane controls
