@@ -16,7 +16,6 @@ import { Airplane } from './plane.js';
 import { Enemies, Enemy } from './enemies.js';
 
 const SPEED = 1;
-//var enemies = [];
 let bullets = [];
 
 const reset_bullets = () => {
@@ -162,8 +161,8 @@ function render()
    enemies.update();
 
     //Bullets movement
-    bullets.forEach(element => {
-      element.update();
+    bullets.forEach(bullet => {
+      bullet.update();
     });
   }
   requestAnimationFrame(render);
