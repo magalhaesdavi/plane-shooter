@@ -141,7 +141,7 @@ function keyboardUpdate() {
     if ((airplane.cone.position.z - game.cameraHolder.position.z) < -40 )
       airplane.cone.translateY(-1);
   }
-  if ((keyboard.pressed("space") || keyboard.pressed("ctrl")) && game.running ) {
+  if ((keyboard.down("space") || keyboard.down("ctrl")) && game.running ) {
     let bullet = airplane.shoot(SPEED, airplane, game);
     bullets.push(bullet);
   }
@@ -158,7 +158,7 @@ function render()
     game.update();
 
     //Movimento dos inimigos
-   enemies.update();
+   enemies.update(bullets);
 
     //Bullets movement
     bullets.forEach(bullet => {
