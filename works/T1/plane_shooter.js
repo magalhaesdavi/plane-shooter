@@ -18,6 +18,14 @@ import { Enemy } from './enemies.js';
 
 const SPEED = 1;
 var enemies = [];
+let bullets = [];
+
+const resetBullets = () => {
+  bullets.forEach(element => {
+    game.scene.remove(element.sphere);
+  });
+  bullets = [];
+};
 
 class Game {
   constructor() {
@@ -56,6 +64,10 @@ class Game {
 
   start() {
     this.running = true;
+  }
+
+  addOnScene(object) {
+    this.scene.add(object);
   }
 
   //Adiciona novos inimigos em tempo de jogo com posicao e velocidade aleatórias
@@ -100,8 +112,9 @@ let controls = new InfoBox();
   controls.add("Plane Shooter");
   controls.addParagraph();
   controls.add("Use keyboard to interact:");
-  controls.add("* Space to start/pause");
+  controls.add("* Press P to start/pause");
   controls.add("* R to reset the game");
+  controls.add("* Use Arrows do move the airplane");
   controls.show();
 
 render();
@@ -110,12 +123,13 @@ function keyboardUpdate() {
 
   keyboard.update();
 
-  if ( keyboard.down("space") ) {
+  if ( keyboard.down("P") ) {
     game.running = !game.running;
   }
   if ( keyboard.pressed("R") ) {
     main_scenario.reset();
     game.reset(airplane, main_scenario);
+    resetBullets();
   }
 
   // Airplane controls
@@ -135,6 +149,10 @@ function keyboardUpdate() {
     if ((airplane.cone.position.z - game.cameraHolder.position.z) < -40 )
       airplane.cone.translateY(-1);
   }
+  if ((keyboard.down("space") || keyboard.down("ctrl")) && game.running ) {
+    let bullet = airplane.shoot(SPEED, airplane, game);
+    bullets.push(bullet);
+  }
 
 }
 
@@ -151,6 +169,11 @@ function render()
     for(var i = 0; i < enemies.length; i++) {
         enemies[i].update();
     }
+
+    //Bullets movement
+    bullets.forEach(element => {
+      element.update();
+    });
   }
   requestAnimationFrame(render);
   game.renderer.render(game.scene, game.camera) // Render scene
