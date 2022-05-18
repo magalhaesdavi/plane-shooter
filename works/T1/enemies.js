@@ -10,10 +10,10 @@ export class Enemy {
     constructor(speed) {
         this.geometry = new THREE.BoxGeometry( 4, 4, 4 );
         this.material = new THREE.MeshBasicMaterial();
-        this.hit_box = new THREE.Box3();
         this.cube = new THREE.Mesh( this.geometry, this.material );
         this.speed = speed;
-        this.cube.geometry.computeBoundingBox();
+        this.boundingBox = new THREE.Box3().setFromObject(this.cube);
+        // this.cube.geometry.computeBoundingBox();
         return;
     }
 
@@ -26,8 +26,27 @@ export class Enemy {
     //Movimenta com base em sua velocidade
     update() {
         this.cube.translateZ(this.speed);
-        this.hit_box.copy(this.cube.geometry.boundingBox)
-            .applyMatrix4(this.cube.matrixWorld);
+        this.boundingBox.copy(this.cube.geometry.boundingBox).applyMatrix4(this.cube.matrixWorld);
+    }
+
+    checkMissileCollision(missiles) {
+        for(var i = 0; i < missiles.length; i++) {
+            if(this.boundingBox.intersectsBox(missiles[i].boundingBox)) {
+                // console.log("hit");
+                // this.cube.translateZ(-15);
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    checkPlaneCollision(plane) {
+        if(this.boundingBox.intersectsBox(plane.boundingBox)) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }
 
@@ -79,7 +98,7 @@ export class Enemies extends Array {
     reset(game) {
         this.forEach(enemy => {
             game.scene.remove(enemy.cube);
-          });
+        });
         this.splice(0, this.length-1);
     }
 }

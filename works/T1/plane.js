@@ -10,10 +10,12 @@ export class Airplane {
         this.geometry = new THREE.ConeGeometry( 2, 3, 32 );
         this.material = new THREE.MeshBasicMaterial();
         this.cone = new THREE.Mesh( this.geometry, this.material );
+        this.boundingBox = new THREE.Box3().setFromObject(this.cone);
     }
 
-    move(speed) {
+    update(speed) {
         this.cone.translateY(speed);
+        this.boundingBox.copy(this.cone.geometry.boundingBox).applyMatrix4(this.cone.matrixWorld);
     }
 
     setInitialOrResetPosition(initial = true) {
@@ -23,7 +25,7 @@ export class Airplane {
         }
     }
 
-    shoot(speed, airplane, game) {
+    bullet(speed, airplane, game) {
         let bullet = new Bullet(speed);
         bullet.create(airplane);
         game.addOnScene(bullet.sphere);
@@ -39,10 +41,10 @@ export class Bullet {
     constructor(speed) {
         this.geometry = new THREE.SphereGeometry( 0.5, 32, 32 );
         this.material = new THREE.MeshBasicMaterial( { color: 0xffa500 } );
-        this.hit_box = new THREE.Box3();
         this.sphere = new THREE.Mesh( this.geometry, this.material );
         this.speed = speed * 2.25;
-        this.sphere.geometry.computeBoundingBox();
+        this.boundingBox = new THREE.Box3().setFromObject(this.sphere);
+        // this.sphere.geometry.computeBoundingBox();
         return;
     }
 
@@ -57,9 +59,6 @@ export class Bullet {
 
     update() {
         this.sphere.translateZ(-this.speed);
-        this.hit_box.copy(this.sphere.geometry.boundingBox)
-            .applyMatrix4(this.sphere.matrixWorld);
+        this.boundingBox.copy(this.sphere.geometry.boundingBox).applyMatrix4(this.sphere.matrixWorld);
     }
-
-
 }

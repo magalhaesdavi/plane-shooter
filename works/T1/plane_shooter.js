@@ -167,4 +167,46 @@ function render()
   }
   requestAnimationFrame(render);
   game.renderer.render(game.scene, game.camera) // Render scene
+        for(var i = 0; i < enemies.length; i++) {
+            enemies[i].update();
+
+            if(enemies[i].cube.position.z > game.cameraHolder.position.z) {
+                game.scene.remove(enemies[i].cube);
+                enemies.splice(i, 1);
+                i--;
+                if(i >= enemies.length || i < 0) {
+                    break;
+                }
+            }
+            
+            var shot = enemies[i].checkMissileCollision(bullets);
+            if(shot > -1){
+                game.scene.remove(bullets[shot].sphere);
+                bullets.splice(shot, 1);
+
+                game.scene.remove(enemies[i].cube);
+                enemies.splice(i, 1);
+                
+                //PLACE HIT ANIMATION HERE
+
+                i--;
+                if(i >= enemies.length || i < 0) {
+                    break;
+                }
+            }
+                
+            var crash = enemies[i].checkPlaneCollision(airplane)
+            if(crash) {
+                //PLACE CRASH ANIMATION HERE
+            
+                fullReset();
+            }
+        }
+
+        for(var i = 0; i < bullets.length; i++) {
+            if(bullets[i].sphere.position.z < game.cameraHolder.position.z - 200) {
+                game.scene.remove(bullets[i].sphere);
+                bullets.splice(i, 1);
+            }
+        }
 }
