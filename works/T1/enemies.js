@@ -8,7 +8,7 @@ import * as THREE from  'three';
 */}
 export class Enemy {
     constructor(speed) {
-        this.geometry = new THREE.BoxGeometry( 1, 1, 1 );
+        this.geometry = new THREE.BoxGeometry( 4, 4, 4 );
         this.material = new THREE.MeshBasicMaterial();
         this.cube = new THREE.Mesh( this.geometry, this.material );
         this.speed = speed
