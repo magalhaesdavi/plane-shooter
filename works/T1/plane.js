@@ -23,8 +23,11 @@ export class Airplane {
         }
     }
 
-    atirar() {
-        
+    shoot(speed, airplane, game) {
+        let bullet = new Bullet(speed);
+        bullet.create(airplane);
+        game.addOnScene(bullet.sphere);
+        return bullet;
     }
 }
 
@@ -33,12 +36,22 @@ export class Airplane {
     funcionalidades dos projetes que o avião atira'.
 */}
 export class Bullet {
-    constructor() {
-        //TODO: Implementar criação de projétil
+    constructor(speed) {
+        this.geometry = new THREE.SphereGeometry( 0.5, 32, 32 );
+        this.material = new THREE.MeshBasicMaterial( { color: 0xffa500 } );
+        this.sphere = new THREE.Mesh( this.geometry, this.material );
+        this.speed = speed * 2.25;
         return;
     }
-    create() {
-        //TODO: Implementar geração de projétil no jogo
+
+    create(airplane) {
+        this.sphere.position.set(airplane.cone.position.x, airplane.cone.position.y, airplane.cone.position.z - 5);
         return;
     }
+
+    update() {
+        this.sphere.translateZ(-this.speed);
+    }
+
+
 }
