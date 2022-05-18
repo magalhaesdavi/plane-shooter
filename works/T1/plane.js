@@ -39,8 +39,10 @@ export class Bullet {
     constructor(speed) {
         this.geometry = new THREE.SphereGeometry( 0.5, 32, 32 );
         this.material = new THREE.MeshBasicMaterial( { color: 0xffa500 } );
+        this.hit_box = new THREE.Box3();
         this.sphere = new THREE.Mesh( this.geometry, this.material );
         this.speed = speed * 2.25;
+        this.sphere.geometry.computeBoundingBox();
         return;
     }
 
@@ -55,6 +57,8 @@ export class Bullet {
 
     update() {
         this.sphere.translateZ(-this.speed);
+        this.hit_box.copy(this.sphere.geometry.boundingBox)
+            .applyMatrix4(this.sphere.matrixWorld);
     }
 
 

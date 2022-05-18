@@ -10,8 +10,10 @@ export class Enemy {
     constructor(speed) {
         this.geometry = new THREE.BoxGeometry( 4, 4, 4 );
         this.material = new THREE.MeshBasicMaterial();
+        this.hit_box = new THREE.Box3();
         this.cube = new THREE.Mesh( this.geometry, this.material );
-        this.speed = speed
+        this.speed = speed;
+        this.cube.geometry.computeBoundingBox();
         return;
     }
 
@@ -24,6 +26,8 @@ export class Enemy {
     //Movimenta com base em sua velocidade
     update() {
         this.cube.translateZ(this.speed);
+        this.hit_box.copy(this.cube.geometry.boundingBox)
+            .applyMatrix4(this.cube.matrixWorld);
     }
 }
 
@@ -65,7 +69,7 @@ export class Enemies extends Array {
         }       
     }
 
-    update() {
+    update(bullets=null) {
         //Movimento dos inimigos
         this.forEach(enemy => {
             enemy.update();
