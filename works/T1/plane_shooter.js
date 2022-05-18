@@ -13,10 +13,10 @@ import {
 
 import { Scenario } from './scenario.js';
 import { Airplane } from './plane.js';
-import { Enemy } from './enemies.js';
+import { Enemies, Enemy } from './enemies.js';
 
 const SPEED = 1;
-var enemies = [];
+//var enemies = [];
 let bullets = [];
 
 const resetBullets = () => {
@@ -40,7 +40,6 @@ class Game {
     this.renderer = initRenderer();    // Init a basic renderer
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000); // Init camera in this position
     this.light = initDefaultBasicLight(this.scene); // Create a basic light to illuminate the scene
-    //this.orbit = new OrbitControls( this.camera, this.renderer.domElement ); // Enable mouse rotation, pan, zoom etc.  
 
     // Creating a holder for the camera
     this.cameraHolder = new THREE.Object3D();
@@ -78,18 +77,7 @@ class Game {
 
   //Adiciona novos inimigos em tempo de jogo com posicao e velocidade aleatórias
   update() {
-    if (Math.random() > 0.98) {
-			let new_enemy = new Enemy(Math.random() * 2);
-			new_enemy.setPosition(
-        Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1),
-        5,
-        game.cameraHolder.position.z - 300
-      );
-			enemies.push(new_enemy)
-		}
-    for(var i = 0; i < enemies.length; i++) {
-        this.scene.add(enemies[i].cube)
-    }
+    enemies.enemies_update(this);
   }
 }
 
@@ -112,6 +100,8 @@ let keyboard = new KeyboardState();
 let main_scenario = new Scenario(600, 600);
 // Create plane
 let airplane = new Airplane();
+// Create enemies
+let enemies = new Enemies();
 
 // Initializing the game
 game.init(airplane, main_scenario);
@@ -139,7 +129,7 @@ function keyboardUpdate() {
     main_scenario.reset();
     game.reset(airplane, main_scenario);
     resetBullets();
-    resetEnemies();
+    enemies.reset(game);
   }
 
   // Airplane controls
@@ -159,7 +149,7 @@ function keyboardUpdate() {
     if ((airplane.cone.position.z - game.cameraHolder.position.z) < -40 )
       airplane.cone.translateY(-1);
   }
-  if ((keyboard.down("space") || keyboard.down("ctrl")) && game.running ) {
+  if ((keyboard.pressed("space") || keyboard.pressed("ctrl")) && game.running ) {
     let bullet = airplane.shoot(SPEED, airplane, game);
     bullets.push(bullet);
   }
@@ -176,9 +166,7 @@ function render()
     game.update();
 
     //Movimento dos inimigos
-    for(var i = 0; i < enemies.length; i++) {
-        enemies[i].update();
-    }
+   enemies.update();
 
     //Bullets movement
     bullets.forEach(element => {
