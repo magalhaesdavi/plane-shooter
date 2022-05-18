@@ -45,7 +45,11 @@ export class Bullet {
     }
 
     create(airplane) {
-        this.sphere.position.set(airplane.cone.position.x, airplane.cone.position.y, airplane.cone.position.z - 5);
+        this.sphere.position.set(
+            airplane.cone.position.x,
+            airplane.cone.position.y,
+            airplane.cone.position.z - 5
+        );
         return;
     }
 
