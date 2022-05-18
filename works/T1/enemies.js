@@ -31,8 +31,51 @@ export class Enemy {
     Classe referente ao objeto que controla as
     funcionalidades dos adversarios que aparecem ao longo do jogo'.
 */}
-export class Enemies {
-    constructor () {
-        return;
+export class Enemies extends Array {
+    constructor (items = null) {
+        super();
+        items && this.addItems(items);
+    }
+
+    serialize(items) {
+        this.splice(0, this.length);
+        this.addItems(items);
+    }
+
+    addItems(items) {
+        if (typeof items == 'Array') {
+            items.forEach(item => {
+                this.push(item);
+            });
+        }
+    }
+
+    enemies_update(game) {
+        if (Math.random() > 0.98) {
+			let new_enemy = new Enemy(Math.random() * 2);
+			new_enemy.setPosition(
+                Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1),
+                5,
+                game.cameraHolder.position.z - 300
+            );
+			this.push(new_enemy)
+		}
+        for(var i = 0; i < this.length; i++) {
+            game.scene.add(this[i].cube)
+        }       
+    }
+
+    update() {
+        //Movimento dos inimigos
+        this.forEach(enemy => {
+            enemy.update();
+        });
+    }
+
+    reset(game) {
+        this.forEach(enemy => {
+            game.scene.remove(enemy.cube);
+          });
+        this.splice(0, this.length-1);
     }
 }
