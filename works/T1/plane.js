@@ -39,7 +39,7 @@ export class Airplane {
 */}
 export class Bullet {
     constructor(speed) {
-        this.geometry = new THREE.SphereGeometry( 0.5, 32, 32 );
+        this.geometry = new THREE.SphereGeometry( 0.75, 32, 32 );
         this.material = new THREE.MeshBasicMaterial( { color: 0xffa500 } );
         this.sphere = new THREE.Mesh( this.geometry, this.material );
         this.speed = speed * 2.25;
