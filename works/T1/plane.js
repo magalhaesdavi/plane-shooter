@@ -8,12 +8,19 @@ import { degreesToRadians } from '../../libs/util/util.js';
 export class Airplane {
     constructor() {
         this.geometry = new THREE.ConeGeometry( 2, 3, 32 );
-        this.material = new THREE.MeshBasicMaterial();
+        this.material = new THREE.MeshLambertMaterial({color: 0xFFFFFF});
         this.cone = new THREE.Mesh( this.geometry, this.material );
         this.boundingBox = new THREE.Box3().setFromObject(this.cone);
+        this.shootPermission = false;
+        this.startTime = new Date();
     }
 
     update(speed) {
+        let endTime = new Date();
+        if(endTime - this.startTime > 100) {
+            this.shootPermission = true;
+            this.startTime = new Date();
+        }
         this.cone.translateY(speed);
         this.boundingBox.copy(this.cone.geometry.boundingBox).applyMatrix4(this.cone.matrixWorld);
     }
@@ -26,10 +33,16 @@ export class Airplane {
     }
 
     bullet(speed, airplane, game) {
-        let bullet = new Bullet(speed);
-        bullet.create(airplane);
-        game.addOnScene(bullet.sphere);
-        return bullet;
+        if(this.shootPermission){
+            let bullet = new Bullet(speed);
+            bullet.create(airplane);
+            game.addOnScene(bullet.sphere);
+            this.shootPermission = false;
+            return bullet;
+        }
+        else {
+            return null;
+        }
     }
 }
 
@@ -40,7 +53,7 @@ export class Airplane {
 export class Bullet {
     constructor(speed) {
         this.geometry = new THREE.SphereGeometry( 0.75, 32, 32 );
-        this.material = new THREE.MeshBasicMaterial( { color: 0xffa500 } );
+        this.material = new THREE.MeshLambertMaterial( { color: 0xffa500 } );
         this.sphere = new THREE.Mesh( this.geometry, this.material );
         this.speed = speed * 2.25;
         this.boundingBox = new THREE.Box3().setFromObject(this.sphere);

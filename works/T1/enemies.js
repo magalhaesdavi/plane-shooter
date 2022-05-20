@@ -9,7 +9,7 @@ import * as THREE from  'three';
 export class Enemy {
     constructor(speed) {
         this.geometry = new THREE.BoxGeometry( 4, 4, 4 );
-        this.material = new THREE.MeshBasicMaterial();
+        this.material = new THREE.MeshLambertMaterial({color: 0xFF0000});
         this.cube = new THREE.Mesh( this.geometry, this.material );
         this.speed = speed;
         this.boundingBox = new THREE.Box3().setFromObject(this.cube);

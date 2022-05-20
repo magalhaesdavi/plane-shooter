@@ -78,7 +78,7 @@ class Game {
     //Adiciona novos inimigos em tempo de jogo com posicao e velocidade aleatórias
     update() {
         // enemies.enemies_update(this);
-        if (Math.random() > 0.95) {
+        if (Math.random() > 0.85) {
 			var temp = new Enemy(Math.random() * 2);
 			temp.setPosition(Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1), 5,
                 this.cameraHolder.position.z - 300);
@@ -99,8 +99,8 @@ window.addEventListener(
     false 
 );
 // Show axes (parameter is size of each axis)
-let axesHelper = new THREE.AxesHelper( 12 );
-game.scene.add( axesHelper );
+//let axesHelper = new THREE.AxesHelper( 12 );
+//game.scene.add( axesHelper );
 
 // To use the keyboard
 let keyboard = new KeyboardState();
@@ -142,12 +142,7 @@ function keyboardUpdate() {
         game.running = !game.running;
     }
     if ( keyboard.pressed("R") ) {
-        // main_scenario.reset();
-        // game.reset(airplane, main_scenario);
-        // reset_bullets();
-        // reset_enemies();
         fullReset();
-        // enemies.reset(game);
     }
 
     // Airplane controls
@@ -167,20 +162,16 @@ function keyboardUpdate() {
         if ((airplane.cone.position.z - game.cameraHolder.position.z) < -40 )
             airplane.cone.translateY(-1);
     }
-    if ((keyboard.down("space") || keyboard.down("ctrl")) && game.running ) {
+    if ((keyboard.pressed("space") || keyboard.down("ctrl")) && game.running ) {
         let bullet = airplane.bullet(SPEED, airplane, game);
-        bullets.push(bullet);
+        if(bullet != null) {
+            bullets.push(bullet);
+        }
     }
 }
 
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms))
-}
-
-function removeEnemy(enemies, i) {
-    game.scene.remove(enemies[i].cube);
-    enemies.splice(i, 1);
-    return i--;
 }
 
 async function checkBoundariesAndCollisions() {
@@ -207,18 +198,14 @@ async function checkBoundariesAndCollisions() {
             gsap.to(temp_cube.position, {z: temp_cube.position.z - 20, duration: 0.25});
             await sleep(500);
             game.scene.remove(temp_cube);
-            //PLACE HIT ANIMATION HERE
-
             i--;
-            // if(i >= enemies.length || i < 0) {
-            //     break;
-            // }
+        }
 
+        if(i >= enemies.length || i < 0) {
+            break;
         }
         var crash = enemies[i].checkPlaneCollision(airplane)
-        if(crash && i < enemies.length) {
-            //PLACE CRASH ANIMATION HERE
-            // gsap.to(airplane.cone.rotation, {y: 3.15, duration: 0.25});
+        if(crash) {
             gsap.to(airplane.cone.scale, {x:0, y: 0, z: 0, duration: 0.25});
             await sleep(500);
             fullReset();
@@ -238,61 +225,18 @@ function render()
 {
     keyboardUpdate();
     if (game.running) {
-        airplane.update(SPEED);
-        game.cameraHolder.position.z -= SPEED;
-        main_scenario.update(game.cameraHolder);
-        game.update();
-
-        //Movimento dos inimigos
-    // enemies.update(bullets);
-        checkBoundariesAndCollisions();
-        // for(var i = 0; i < enemies.length; i++) {
-        //     enemies[i].update();
-
-        //     if(enemies[i].cube.position.z > game.cameraHolder.position.z) {
-        //         game.scene.remove(enemies[i].cube);
-        //         enemies.splice(i, 1);
-        //         i--;
-        //         if(i >= enemies.length || i < 0) {
-        //             break;
-        //         }
-        //     }
-            
-        //     var shot = enemies[i].checkMissileCollision(bullets);
-        //     if(shot > -1){
-        //         game.scene.remove(bullets[shot].sphere);
-        //         bullets.splice(shot, 1);
-
-        //         game.scene.remove(enemies[i].cube);
-        //         enemies.splice(i, 1);
-                
-        //         //PLACE HIT ANIMATION HERE
-
-        //         i--;
-        //         if(i >= enemies.length || i < 0) {
-        //             break;
-        //         }
-        //     }
-                
-        //     var crash = enemies[i].checkPlaneCollision(airplane)
-        //     if(crash) {
-        //         //PLACE CRASH ANIMATION HERE
-            
-        //         fullReset();
-        //     }
-        // }
-
-        // for(var i = 0; i < bullets.length; i++) {
-        //     if(bullets[i].sphere.position.z < game.cameraHolder.position.z - 200) {
-        //         game.scene.remove(bullets[i].sphere);
-        //         bullets.splice(i, 1);
-        //     }
-        // }
-
         //Bullets movement
         bullets.forEach(bullet => {
         bullet.update();
         });
+        airplane.update(SPEED);
+        main_scenario.update(game.cameraHolder);
+        game.update();
+        game.cameraHolder.position.z -= SPEED;
+
+        //Movimento dos inimigos
+        checkBoundariesAndCollisions();
+
     }
     requestAnimationFrame(render);
     game.renderer.render(game.scene, game.camera) // Render scene
