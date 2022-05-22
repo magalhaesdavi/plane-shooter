@@ -17,7 +17,7 @@ export class Airplane {
 
     update(speed) {
         let endTime = new Date();
-        if(endTime - this.startTime > 100) {
+        if(endTime - this.startTime > 150) {
             this.shootPermission = true;
             this.startTime = new Date();
         }
@@ -32,7 +32,7 @@ export class Airplane {
         }
     }
 
-    bullet(speed, airplane, game) {
+    shoot(speed, airplane, game) {
         if(this.shootPermission){
             let bullet = new Bullet(speed);
             bullet.create(airplane);

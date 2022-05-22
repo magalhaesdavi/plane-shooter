@@ -1,7 +1,5 @@
 import * as THREE from  'three';
 
-//TODO: Implementar funcionalidades e lógica dos inimigos
-
 {/**
     Classe referente ao objeto que controla as
     funcionalidades de um inimigo'.
@@ -29,17 +27,17 @@ export class Enemy {
         this.boundingBox.copy(this.cube.geometry.boundingBox).applyMatrix4(this.cube.matrixWorld);
     }
 
+    //Checa colisão do objeto com todos os mísseis na tela
     checkMissileCollision(missiles) {
         for(var i = 0; i < missiles.length; i++) {
             if(this.boundingBox.intersectsBox(missiles[i].boundingBox)) {
-                // console.log("hit");
-                // this.cube.translateZ(-15);
                 return i;
             }
         }
         return -1;
     }
 
+    //Checa colisão do objeto com o avião
     checkPlaneCollision(plane) {
         if(this.boundingBox.intersectsBox(plane.boundingBox)) {
             return true;
@@ -47,58 +45,5 @@ export class Enemy {
         else {
             return false;
         }
-    }
-}
-
-{/**
-    Classe referente ao objeto que controla as
-    funcionalidades dos adversarios que aparecem ao longo do jogo'.
-*/}
-export class Enemies extends Array {
-    constructor (items = null) {
-        super();
-        items && this.addItems(items);
-    }
-
-    serialize(items) {
-        this.splice(0, this.length);
-        this.addItems(items);
-    }
-
-    addItems(items) {
-        if (typeof items == 'Array') {
-            items.forEach(item => {
-                this.push(item);
-            });
-        }
-    }
-
-    enemies_update(game) {
-        if (Math.random() > 0.98) {
-			let new_enemy = new Enemy(Math.random() * 2);
-			new_enemy.setPosition(
-                Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1),
-                5,
-                game.cameraHolder.position.z - 300
-            );
-			this.push(new_enemy)
-		}
-        for(var i = 0; i < this.length; i++) {
-            game.scene.add(this[i].cube)
-        }       
-    }
-
-    update(bullets=null) {
-        //Movimento dos inimigos
-        this.forEach(enemy => {
-            enemy.update();
-        });
-    }
-
-    reset(game) {
-        this.forEach(enemy => {
-            game.scene.remove(enemy.cube);
-        });
-        this.splice(0, this.length-1);
     }
 }
