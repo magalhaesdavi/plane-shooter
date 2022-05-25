@@ -78,14 +78,12 @@ class Game {
     //Adiciona novos inimigos em tempo de jogo com posicao e velocidade aleatórias
     update() {
         if (Math.random() > 0.85) {
-			var temp = new Enemy(Math.random() * 2);
-			temp.setPosition(Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1), 5,
+			var new_enemy = new Enemy(Math.random() * 2);
+			new_enemy.setPosition(Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1), 5,
                 this.cameraHolder.position.z - 300);
-			enemies.push(temp)
+			enemies.push(new_enemy)
+            this.scene.add(new_enemy.cube)
 		}
-        for(var i = 0; i < enemies.length; i++) {
-            this.scene.add(enemies[i].cube)
-        }
     }
 }
 
