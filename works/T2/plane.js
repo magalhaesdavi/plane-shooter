@@ -54,4 +54,8 @@ export class Airplane {
         }
         return -1;
     }
+
+    getGeometry() {
+        return this.cone;
+    }
 }

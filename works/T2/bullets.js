@@ -29,6 +29,10 @@ export class Bullet {
         this.sphere.translateZ(-this.speed);
         this.boundingBox.copy(this.sphere.geometry.boundingBox).applyMatrix4(this.sphere.matrixWorld);
     }
+
+    getGeometry() {
+        return this.sphere;
+    }
 }
 
 {/**
@@ -66,5 +70,9 @@ export class EnemyBullet {
             return true;
         }
         return false;
+    }
+
+    getGeometry() {
+        return this.sphere;
     }
 }

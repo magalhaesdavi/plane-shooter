@@ -33,7 +33,7 @@ export class lineEnemy {
     //Movimenta com base em sua velocidade
     update() {
         let endTime = new Date();
-        if(endTime - this.startTime > 500) {
+        if(endTime - this.startTime > 1000) {
             this.shootPermission = true;
             this.startTime = new Date();
         }
@@ -41,11 +41,11 @@ export class lineEnemy {
         this.boundingBox.copy(this.cube.geometry.boundingBox).applyMatrix4(this.cube.matrixWorld);
     }
 
-    shoot(speed) {
+    shoot(speed, airplane) {
         if(this.shootPermission){
             let bullet = new EnemyBullet(speed);
             bullet.create(this);
-            //game.addOnScene(bullet.sphere);
+            bullet.sphere.lookAt(airplane.cone.position);
             this.shootPermission = false;
             return bullet;
         }
@@ -72,6 +72,10 @@ export class lineEnemy {
         else {
             return false;
         }
+    }
+
+    getGeometry() {
+        return this.cube;
     }
 }
 
@@ -140,6 +144,10 @@ export class archEnemy {
             return false;
         }
     }
+
+    getGeometry() {
+        return this.cube;
+    }
 }
 
 export class diagonalEnemy {
@@ -188,5 +196,9 @@ export class diagonalEnemy {
         else {
             return false;
         }
+    }
+
+    getGeometry() {
+        return this.cube;
     }
 }
