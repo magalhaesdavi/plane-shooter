@@ -1,4 +1,5 @@
 import * as THREE from  'three';
+import { EnemyBullet } from './bullets.js'
 // import { degreesToRadians } from '../../libs/util/util';
 
 function degreesToRadians(degrees)
@@ -18,7 +19,8 @@ export class lineEnemy {
         this.cube = new THREE.Mesh( this.geometry, this.material );
         this.speed = speed;
         this.boundingBox = new THREE.Box3().setFromObject(this.cube);
-        // this.cube.geometry.computeBoundingBox();
+        this.shootPermission = false;
+        this.startTime = new Date();
         return;
     }
 
@@ -30,8 +32,26 @@ export class lineEnemy {
 
     //Movimenta com base em sua velocidade
     update() {
+        let endTime = new Date();
+        if(endTime - this.startTime > 500) {
+            this.shootPermission = true;
+            this.startTime = new Date();
+        }
         this.cube.translateZ(this.speed);
         this.boundingBox.copy(this.cube.geometry.boundingBox).applyMatrix4(this.cube.matrixWorld);
+    }
+
+    shoot(speed) {
+        if(this.shootPermission){
+            let bullet = new EnemyBullet(speed);
+            bullet.create(this);
+            //game.addOnScene(bullet.sphere);
+            this.shootPermission = false;
+            return bullet;
+        }
+        else {
+            return null;
+        }
     }
 
     //Checa colisão do objeto com todos os mísseis na tela
@@ -97,6 +117,10 @@ export class archEnemy {
         this.boundingBox.copy(this.cube.geometry.boundingBox).applyMatrix4(this.cube.matrixWorld);
     }
 
+    shoot(speed) {
+        return null;
+    }
+
     //Checa colisão do objeto com todos os mísseis na tela
     checkMissileCollision(missiles) {
         for(var i = 0; i < missiles.length; i++) {
@@ -140,6 +164,10 @@ export class diagonalEnemy {
         this.cube.translateZ(this.speed);
         this.cube.translateX(this.speed);
         this.boundingBox.copy(this.cube.geometry.boundingBox).applyMatrix4(this.cube.matrixWorld);
+    }
+
+    shoot(speed) {
+        return null;
     }
 
     //Checa colisão do objeto com todos os mísseis na tela
