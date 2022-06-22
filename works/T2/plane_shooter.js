@@ -32,6 +32,7 @@ class Game {
     constructor() {
         this.started = false;
         this.running = false;
+        this.godMode = false;
         this.scene = new THREE.Scene();    // Create main scene
         this.renderer = initRenderer();    // Init a basic renderer
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000); // Init camera in this position
@@ -43,7 +44,7 @@ class Game {
         this.scene.add(this.cameraHolder);
 
         this.game_level = 0;
-        this.SPAWN_PROBABILITY = 0.15
+        this.SPAWN_PROBABILITY = 0.05
         this.firstTimeout = null
         this.secondTimeout = null
         this.thirdTimeout = null
@@ -80,6 +81,10 @@ class Game {
 
     addOnScene(object) {
         this.scene.add(object);
+    }
+
+    godMode() {
+        this.godMode = !this.godMode;
     }
 
     //Adiciona novos inimigos em tempo de jogo com posicao e velocidade aleatórias
@@ -201,7 +206,7 @@ function keyboardUpdate() {
         if ((airplane.cone.position.z - game.cameraHolder.position.z) < -40 )
             airplane.cone.translateY(-1);
     }
-    if ((keyboard.pressed("space") || keyboard.down("ctrl")) && game.running ) {
+    if (keyboard.pressed("ctrl") && game.running ) {
         let bullet = airplane.shoot(SPEED, airplane, game);
         if(bullet != null) {
             bullets.push(bullet);

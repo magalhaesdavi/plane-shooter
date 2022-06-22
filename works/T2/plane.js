@@ -18,7 +18,7 @@ export class Airplane {
 
     update(speed) {
         let endTime = new Date();
-        if(endTime - this.startTime > 150) {
+        if(endTime - this.startTime >= 500) {
             this.shootPermission = true;
             this.startTime = new Date();
         }
