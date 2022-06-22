@@ -18,15 +18,6 @@ import { lineEnemy, archEnemy, diagonalEnemy } from './enemies.js';
 const SPEED = 1;
 let bullets = [];
 var enemies = [];
-var game_level = 0;
-let SPAWN_PROBABILITY = 0.15
-var firstTimeout = null
-var secondTimeout = null
-var thirdTimeout = null
-let firstLevelDuration = 1000
-let secondLevelDuration = 15000
-let thirdLevelDuration = 20000
-let forthLevelDuration = 30000
 
 const reset_bullets = () => {
     bullets.forEach(bullet => {
@@ -55,6 +46,16 @@ class Game {
         this.cameraHolder = new THREE.Object3D();
         this.cameraHolder.add(this.camera);
         this.scene.add(this.cameraHolder);
+
+        this.game_level = 0;
+        this.SPAWN_PROBABILITY = 0.15
+        this.firstTimeout = null
+        this.secondTimeout = null
+        this.thirdTimeout = null
+        this.firstLevelDuration = 1000
+        this.secondLevelDuration = 15000
+        this.thirdLevelDuration = 20000
+        this.forthLevelDuration = 30000
     }
 
     init(airplane, scenario) {
@@ -88,8 +89,8 @@ class Game {
 
     //Adiciona novos inimigos em tempo de jogo com posicao e velocidade aleatórias
     update() {
-        if(game_level == 0){
-            if (Math.random() < SPAWN_PROBABILITY) {
+        if(this.game_level == 0){
+            if (Math.random() < this.SPAWN_PROBABILITY) {
                 var new_enemy = new lineEnemy(Math.random() * 2);
                 new_enemy.setPosition(Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1), 5,
                 this.cameraHolder.position.z - 300);
@@ -97,23 +98,23 @@ class Game {
                 this.scene.add(new_enemy.cube)
             }
         }
-        if(game_level == 1){
-            if (Math.random() < SPAWN_PROBABILITY) {
+        if(this.game_level == 1){
+            if (Math.random() < this.SPAWN_PROBABILITY) {
                 var new_enemy = new archEnemy(2);
                 new_enemy.setPosition(-70, 5, this.cameraHolder.position.z - 300);
                 enemies.push(new_enemy)
                 this.scene.add(new_enemy.cube)
             }
         }
-        if(game_level >= 2){
-            if (Math.random() < SPAWN_PROBABILITY) {
+        if(this.game_level >= 2){
+            if (Math.random() < this.SPAWN_PROBABILITY) {
                 var new_enemy = new diagonalEnemy(Math.random() * 2);
                 new_enemy.setPosition(-70, 5, this.cameraHolder.position.z - 300);
                 enemies.push(new_enemy)
                 this.scene.add(new_enemy.cube)
             }
         }
-        console.log(game_level);
+        console.log(this.game_level);
     }
 }
 
@@ -154,12 +155,12 @@ controls.show();
 render();
 
 function fullReset() {
-    clearTimeout(firstTimeout);
-    clearTimeout(secondTimeout);
-    clearTimeout(thirdTimeout);
+    clearTimeout(game.firstTimeout);
+    clearTimeout(game.secondTimeout);
+    clearTimeout(game.thirdTimeout);
     main_scenario.reset();
     game.reset(airplane, main_scenario);
-    game_level = 0;
+    game.game_level = 0;
     reset_bullets();
     reset_enemies();
     airplane.cone.scale.set(1, 1, 1)
@@ -168,7 +169,7 @@ function fullReset() {
 }
 
 function advance_level() {
-    game_level++;
+    game.game_level++;
 }
 
 function keyboardUpdate() {
@@ -176,9 +177,9 @@ function keyboardUpdate() {
 
     if ( keyboard.down("P") ) {
         if(!game.started){
-            firstTimeout = setTimeout(advance_level, firstLevelDuration);
-            secondTimeout = setTimeout(advance_level, firstLevelDuration + secondLevelDuration);
-            thirdTimeout = setTimeout(advance_level, firstLevelDuration + secondLevelDuration + thirdLevelDuration);
+            game.firstTimeout = setTimeout(advance_level, game.firstLevelDuration);
+            game.secondTimeout = setTimeout(advance_level, game.firstLevelDuration + game.secondLevelDuration);
+            game.thirdTimeout = setTimeout(advance_level, game.firstLevelDuration + game.secondLevelDuration + game.thirdLevelDuration);
         }
         game.started = true;
         game.running = !game.running;
