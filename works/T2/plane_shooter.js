@@ -17,20 +17,14 @@ import { lineEnemy, archEnemy, diagonalEnemy } from './enemies.js';
 
 const SPEED = 1;
 let bullets = [];
+let enemyBullets = [];
 var enemies = [];
 
-const reset_bullets = () => {
-    bullets.forEach(bullet => {
-        game.scene.remove(bullet.sphere);
+const reset_array = (array) => {
+    array.forEach(array => {
+        game.scene.remove(array.sphere);
     });
-    bullets = [];
-};
-
-const reset_enemies = () => {
-    enemies.forEach(enemy => {
-        game.scene.remove(enemy.cube);
-    });
-    enemies = [];
+    array = [];
 };
 
 class Game {
@@ -161,8 +155,9 @@ function fullReset() {
     main_scenario.reset();
     game.reset(airplane, main_scenario);
     game.game_level = 0;
-    reset_bullets();
-    reset_enemies();
+    reset_array(bullets);
+    reset_array(enemies);
+    reset_array(enemyBullets);
     airplane.cone.scale.set(1, 1, 1)
     game.started = false;
     game.running = false;
@@ -222,6 +217,12 @@ async function checkBoundariesAndCollisions() {
 
     for(var i = 0; i < enemies.length; i++) {
         enemies[i].update();
+
+        let enemy_bullet = enemies[i].shoot(1.4);
+        if (enemy_bullet) {
+            game.addOnScene(enemy_bullet.sphere);
+            enemyBullets.push(enemy_bullet);
+        }
         
         //Removendo inimigos que saíram da tela
         if(enemies[i].cube.position.z > game.cameraHolder.position.z || enemies[i].cube.position.x > 70 || 
@@ -266,6 +267,21 @@ async function checkBoundariesAndCollisions() {
         }
     }
 
+    for (let j = 0; j < enemyBullets.length; j++) {
+        //Removendo misseis e avião que colidiram
+        let shot = airplane.checkMissileCollision(enemyBullets);
+        
+        if(shot > -1) {
+            game.scene.remove(enemyBullets[j].sphere);
+            enemyBullets.splice(j, 1);
+
+            //Animação de colisão
+            gsap.to(airplane.cone.scale, {x:0, y: 0, z: 0, duration: 0.25});
+            await sleep(500);
+            fullReset();
+        }
+    }
+
     //Removendo mísseis que saíram da tela
     for(var i = 0; i < bullets.length; i++) {
         if(bullets[i].sphere.position.z < game.cameraHolder.position.z - 200) {
@@ -282,7 +298,11 @@ function render()
     if (game.running) {
         //Movimento dos mísseis
         bullets.forEach(bullet => {
-        bullet.update();
+            bullet.update();
+        });
+
+        enemyBullets.forEach(enemyBullet => {
+            enemyBullet.update();
         });
         
         //Movimento do avião
