@@ -45,4 +45,13 @@ export class Airplane {
             return null;
         }
     }
+
+    checkMissileCollision(missiles) {
+        for(var i = 0; i < missiles.length; i++) {
+            if(this.boundingBox.intersectsBox(missiles[i].boundingBox)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }
