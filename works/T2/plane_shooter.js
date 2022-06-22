@@ -21,10 +21,11 @@ let enemyBullets = [];
 var enemies = [];
 
 const reset_array = (array) => {
-    array.forEach(array => {
-        game.scene.remove(array.sphere);
+    array.forEach((element, idx) => {
+        game.scene.remove(element.getGeometry());
+        array.splice(idx, 1)
     });
-    array = [];
+    //array = [];
 };
 
 class Game {
@@ -217,8 +218,7 @@ async function checkBoundariesAndCollisions() {
 
     for(var i = 0; i < enemies.length; i++) {
         enemies[i].update();
-
-        let enemy_bullet = enemies[i].shoot(1.4);
+        let enemy_bullet = enemies[i].shoot(1.4, airplane);
         if (enemy_bullet) {
             game.addOnScene(enemy_bullet.sphere);
             enemyBullets.push(enemy_bullet);
@@ -279,6 +279,14 @@ async function checkBoundariesAndCollisions() {
             gsap.to(airplane.cone.scale, {x:0, y: 0, z: 0, duration: 0.25});
             await sleep(500);
             fullReset();
+            j--;
+        }
+    }
+
+    for(var i = 0; i < enemyBullets.length; i++) {
+        if(enemyBullets[i].sphere.position.z > game.cameraHolder.position.z) {
+            game.scene.remove(enemyBullets[i].sphere);
+            enemyBullets.splice(i, 1);
         }
     }
 
