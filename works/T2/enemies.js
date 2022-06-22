@@ -77,7 +77,7 @@ export class archEnemy {
     //Movimenta com base em sua velocidade
     update() {
         this.cube.translateZ(this.speed);
-        this.cube.translateX(this.speed);
+        // this.cube.translateX(this.speed);
         this.cube.rotateY(degreesToRadians(1));
 
         // this.cube.translateZ(Math.sin((Date.now()%60000)/60000 * Math.PI * 20) * 50);
