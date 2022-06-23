@@ -34,7 +34,7 @@ class Game {
     constructor() {
         this.started = false;
         this.running = false;
-        this.godMode = false;
+        this.isGodMode = false;
         this.scene = new THREE.Scene();    // Create main scene
         this.renderer = initRenderer();    // Init a basic renderer
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000); // Init camera in this position
@@ -87,7 +87,7 @@ class Game {
     }
 
     godMode() {
-        this.godMode = !this.godMode;
+        this.isGodMode = !this.isGodMode;
     }
 
     //Adiciona novos inimigos em tempo de jogo com posicao e velocidade aleatórias
@@ -219,6 +219,9 @@ function keyboardUpdate() {
         if ((airplane.cone.position.z - game.cameraHolder.position.z) < -40 )
             airplane.cone.translateY(-1);
     }
+    if (keyboard.down("G")) {
+        game.godMode();
+    }
     if (keyboard.pressed("space") && game.running) {
         //novo tiro do aviao para baixo
     }
@@ -280,24 +283,26 @@ async function checkBoundariesAndCollisions() {
         }
 
         //Removendo inimigos e avião que colidiram
-        var crash = enemies[i].checkPlaneCollision(airplane)
-        if(crash) {
-            let endTime = new Date();
-            if(endTime - airplane.damageTime >= 100) {
-                airplane.damageTime = new Date();
-                // Aviao toma dano
-                if (airplane.life > 2) {
-                    //Animacao de dano
-                    gsap.to(airplane.cone.scale, {x:0.4, y: 0.4, z: 0.4, duration: 0.1});
-                    await sleep(100)
-                    gsap.to(airplane.cone.scale, {x:1, y: 1, z: 1, duration: 0.1});
-                    airplane.decreaseLife(2);
-                }
-                else { // Aviao morre
-                    //Animação de colisão
-                    gsap.to(airplane.cone.scale, {x:0, y: 0, z: 0, duration: 0.25});
-                    await sleep(500);
-                    fullReset();
+        if (!game.isGodMode) {
+            var crash = enemies[i].checkPlaneCollision(airplane)
+            if(crash) {
+                let endTime = new Date();
+                if(endTime - airplane.damageTime >= 100) {
+                    airplane.damageTime = new Date();
+                    // Aviao toma dano
+                    if (airplane.life > 2) {
+                        //Animacao de dano
+                        gsap.to(airplane.cone.scale, {x:0.4, y: 0.4, z: 0.4, duration: 0.1});
+                        await sleep(100)
+                        gsap.to(airplane.cone.scale, {x:1, y: 1, z: 1, duration: 0.1});
+                        airplane.decreaseLife(2);
+                    }
+                    else { // Aviao morre
+                        //Animação de colisão
+                        gsap.to(airplane.cone.scale, {x:0, y: 0, z: 0, duration: 0.25});
+                        await sleep(500);
+                        fullReset();
+                    }
                 }
             }
         }
@@ -326,7 +331,6 @@ async function checkBoundariesAndCollisions() {
         //Removendo vidas e aviao que colidiram
         var crash = lives[i].checkPlaneCollision(airplane)
         if(crash) {
-            console.log('vida 1', airplane.life)
             let temp_life = lives[i].life;
             lives.splice(i, 1);
             //Animacao de colisao
@@ -335,35 +339,38 @@ async function checkBoundariesAndCollisions() {
             await sleep(250);
             game.scene.remove(temp_life);
             i--;
+            console.log("VIDAS ATUAIS: ", airplane.life);
         }
     }
 
     //for MISSEIS INIMIGOS
-    for (let j = 0; j < enemyBullets.length; j++) {
-        //Removendo misseis e avião que colidiram
-        let shot = airplane.checkMissileCollision(enemyBullets);
-        
-        if(shot > -1) {
-            let endTime = new Date();
-            if(endTime - airplane.damageTime >= 100) {
-                game.scene.remove(enemyBullets[j].sphere);
-                enemyBullets.splice(j, 1);
-                airplane.damageTime = new Date();
-                // Aviao toma dano
-                if (airplane.life > 1) {
-                    //Animacao de dano
-                    gsap.to(airplane.cone.scale, {x:0.4, y: 0.4, z: 0.4, duration: 0.1});
-                    await sleep(100)
-                    gsap.to(airplane.cone.scale, {x:1, y: 1, z: 1, duration: 0.1});
-                    airplane.decreaseLife(1);
+    if (!game.isGodMode) {
+        for (let j = 0; j < enemyBullets.length; j++) {
+            //Removendo misseis e avião que colidiram
+            let shot = airplane.checkMissileCollision(enemyBullets);
+            
+            if(shot > -1) {
+                let endTime = new Date();
+                if(endTime - airplane.damageTime >= 100) {
+                    game.scene.remove(enemyBullets[j].sphere);
+                    enemyBullets.splice(j, 1);
+                    airplane.damageTime = new Date();
+                    // Aviao toma dano
+                    if (airplane.life > 1) {
+                        //Animacao de dano
+                        gsap.to(airplane.cone.scale, {x:0.4, y: 0.4, z: 0.4, duration: 0.1});
+                        await sleep(100)
+                        gsap.to(airplane.cone.scale, {x:1, y: 1, z: 1, duration: 0.1});
+                        airplane.decreaseLife(1);
+                    }
+                    else { // Aviao morre
+                        //Animação de colisão
+                        gsap.to(airplane.cone.scale, {x:0, y: 0, z: 0, duration: 0.25});
+                        await sleep(500);
+                        fullReset();
+                    }
+                    j--;
                 }
-                else { // Aviao morre
-                    //Animação de colisão
-                    gsap.to(airplane.cone.scale, {x:0, y: 0, z: 0, duration: 0.25});
-                    await sleep(500);
-                    fullReset();
-                }
-                j--;
             }
         }
     }
