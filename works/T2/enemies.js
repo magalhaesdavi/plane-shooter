@@ -107,12 +107,13 @@ export class archEnemy {
             this.shootPermission = true;
             this.startTime = new Date();
         }
-        this.cube.translateZ(this.speed);
-        // this.cube.translateX(this.speed);
-        this.cube.rotateY(degreesToRadians(1));
+        
+        this.cube.rotateY(degreesToRadians(1.25));
+        this.cube.translateZ(1 + 1.85*(this.cube.rotation.y));
 
-        // this.cube.translateZ(Math.sin((Date.now()%60000)/60000 * Math.PI * 20) * 50);
-        // this.cube.translateX(Math.cos((Date.now()%60000)/60000 * Math.PI * 20) * 50);
+        // this.cube.translateZ( ( Math.sin(-1 * this.t) + 1));
+        // this.cube.translateX( ( Math.cos(this.t) + 1));
+        // this.t = (this.t + 0.07) % 360;
 
         // this.cube.position.x += Math.sin(this.speed * Math.PI * 2) * 50;
         // this.cube.position.z += Math.sin(this.speed * Math.PI * 2) * 50;
