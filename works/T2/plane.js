@@ -14,6 +14,8 @@ export class Airplane {
         this.boundingBox = new THREE.Box3().setFromObject(this.cone);
         this.shootPermission = false;
         this.startTime = new Date();
+        this.life = 5;
+        this.damageTime = new Date();
     }
 
     update(speed) {
@@ -31,6 +33,14 @@ export class Airplane {
         if (initial) {
             this.cone.rotateX(degreesToRadians(-90));
         }
+    }
+
+    decreaseLife(hitPoints) {
+        this.life = this.life - hitPoints;
+    }
+
+    increaseLife() {
+        this.life = this.life + 1;
     }
 
     shoot(speed, airplane, game) {
