@@ -40,7 +40,9 @@ export class Airplane {
     }
 
     increaseLife() {
-        this.life = this.life + 1;
+        if (this.life < 5) {
+            this.life = this.life + 1;
+        }
     }
 
     shoot(speed, airplane, game) {
