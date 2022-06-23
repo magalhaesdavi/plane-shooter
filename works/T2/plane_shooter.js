@@ -112,7 +112,7 @@ class Game {
         if(this.game_level == 1){
             if (Math.random() < this.SPAWN_PROBABILITY) {
                 var new_enemy = new archEnemy(2);
-                new_enemy.setPosition(-70, 5, this.cameraHolder.position.z - 300);
+                new_enemy.setPosition(-150, 5, this.cameraHolder.position.z - 270);
                 enemies.push(new_enemy)
                 this.scene.add(new_enemy.cube)
             }
@@ -250,8 +250,8 @@ async function checkBoundariesAndCollisions() {
         }
         
         //Removendo inimigos que saíram da tela
-        if(enemies[i].cube.position.z > game.cameraHolder.position.z || enemies[i].cube.position.x > 70 || 
-            enemies[i].cube.position.x < -70) {
+        if(enemies[i].cube.position.z > game.cameraHolder.position.z || enemies[i].cube.position.x > 150 || 
+            enemies[i].cube.position.x < -200) {
             game.scene.remove(enemies[i].cube);
             enemies.splice(i, 1);
             i--;
