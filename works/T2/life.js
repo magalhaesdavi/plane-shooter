@@ -12,6 +12,7 @@ function updateObject(mesh) {
 }
 
 const createObject = () => {
+    //PARA AJUSTAR O TAMANHO DO OBJETO MODIFICAR APENAS A CONSTANTE "RADIUS"
     const RADIUS = 4
     const DIAMETER = RADIUS*2
     const DEPTH = 0.5
