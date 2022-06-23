@@ -28,7 +28,6 @@ const reset_array = (array) => {
         game.scene.remove(element.getGeometry());
         array.splice(idx, 1)
     });
-    //array = [];
 };
 
 class Game {
@@ -176,6 +175,7 @@ function fullReset() {
     reset_array(bullets);
     reset_array(enemies);
     reset_array(enemyBullets);
+    reset_array(lives);
     airplane.cone.scale.set(1, 1, 1);
     airplane.life = 5;
     game.started = false;
@@ -335,7 +335,6 @@ async function checkBoundariesAndCollisions() {
             await sleep(250);
             game.scene.remove(temp_life);
             i--;
-            console.log('vida 2', airplane.life)
         }
     }
 
