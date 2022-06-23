@@ -14,11 +14,14 @@ import {
 import { Scenario } from './scenario.js';
 import { Airplane } from './plane.js';
 import { lineEnemy, archEnemy, diagonalEnemy } from './enemies.js';
+import { Life } from './life.js';
 
 const SPEED = 1;
 let bullets = [];
 let enemyBullets = [];
-var enemies = [];
+let enemies = [];
+let lives = [];
+
 
 const reset_array = (array) => {
     array.forEach((element, idx) => {
@@ -44,7 +47,8 @@ class Game {
         this.scene.add(this.cameraHolder);
 
         this.game_level = 0;
-        this.SPAWN_PROBABILITY = 0.05
+        this.SPAWN_PROBABILITY = 0.05;
+        this.LIFE_SPAWN_PROBABILITY = 0.0025;
         this.firstTimeout = null
         this.secondTimeout = null
         this.thirdTimeout = null
@@ -89,6 +93,14 @@ class Game {
 
     //Adiciona novos inimigos em tempo de jogo com posicao e velocidade aleatórias
     update() {
+        if (Math.random() < this.LIFE_SPAWN_PROBABILITY) {
+            let new_life = new Life();
+            new_life.setPosition(Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1), 5,
+            this.cameraHolder.position.z - 300);
+            lives.push(new_life);
+            this.scene.add(new_life.life);
+        }
+
         if(this.game_level == 0){
             if (Math.random() < this.SPAWN_PROBABILITY) {
                 var new_enemy = new lineEnemy(Math.random() * 2);
@@ -207,6 +219,9 @@ function keyboardUpdate() {
         if ((airplane.cone.position.z - game.cameraHolder.position.z) < -40 )
             airplane.cone.translateY(-1);
     }
+    if (keyboard.pressed("space") && game.running) {
+        //novo tiro do aviao para baixo
+    }
     if (keyboard.pressed("ctrl") && game.running ) {
         let bullet = airplane.shoot(SPEED, airplane, game);
         if(bullet != null) {
@@ -222,6 +237,7 @@ const sleep = (ms) => {
 //Checa se os objetos saíram da tela ou colidiram
 async function checkBoundariesAndCollisions() {
 
+    //for INIMIGOS
     for(var i = 0; i < enemies.length; i++) {
         enemies[i].update();
         let enemy_bullet = enemies[i].shoot(1.4, airplane);
@@ -287,6 +303,43 @@ async function checkBoundariesAndCollisions() {
         }
     }
 
+    //for VIDAS
+    for(var i = 0; i < lives.length; i++) {
+        lives[i].update();
+        
+        //Removendo vidas que sairam da tela
+        if(lives[i].life.position.z > game.cameraHolder.position.z || lives[i].life.position.x > 70 || 
+            lives[i].life.position.x < -70) {
+            game.scene.remove(lives[i].life);
+            lives.splice(i, 1);
+            i--;
+            if(i >= lives.length || i < 0) {
+                break;
+            }
+        }
+        
+        //Verificar se ainda existem vidas em jogo antes de verificar colisao com aviao
+        if(i >= lives.length || i < 0) {
+            break;
+        }
+
+        //Removendo vidas e aviao que colidiram
+        var crash = lives[i].checkPlaneCollision(airplane)
+        if(crash) {
+            console.log('vida 1', airplane.life)
+            let temp_life = lives[i].life;
+            lives.splice(i, 1);
+            //Animacao de colisao
+            gsap.to(temp_life.scale, {x:0, y: 0, z: 0, duration: 0.25});
+            airplane.increaseLife();
+            await sleep(250);
+            game.scene.remove(temp_life);
+            i--;
+            console.log('vida 2', airplane.life)
+        }
+    }
+
+    //for MISSEIS INIMIGOS
     for (let j = 0; j < enemyBullets.length; j++) {
         //Removendo misseis e avião que colidiram
         let shot = airplane.checkMissileCollision(enemyBullets);
@@ -316,6 +369,7 @@ async function checkBoundariesAndCollisions() {
         }
     }
 
+    //Removendo misseis inimigos que sairam da tela
     for(var i = 0; i < enemyBullets.length; i++) {
         if(enemyBullets[i].sphere.position.z > game.cameraHolder.position.z) {
             game.scene.remove(enemyBullets[i].sphere);
