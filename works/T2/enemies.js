@@ -86,6 +86,8 @@ export class archEnemy {
         this.cube = new THREE.Mesh( this.geometry, this.material );
         this.speed = speed;
         this.boundingBox = new THREE.Box3().setFromObject(this.cube);
+        this.shootPermission = false;
+        this.startTime = new Date();
         this.t = 0;
         // this.cube.geometry.computeBoundingBox();
         return;
@@ -100,6 +102,11 @@ export class archEnemy {
     // WORK IN PROGRESS
     //Movimenta com base em sua velocidade
     update() {
+        let endTime = new Date();
+        if(endTime - this.startTime > 1000) {
+            this.shootPermission = true;
+            this.startTime = new Date();
+        }
         this.cube.translateZ(this.speed);
         // this.cube.translateX(this.speed);
         this.cube.rotateY(degreesToRadians(1));
@@ -121,8 +128,17 @@ export class archEnemy {
         this.boundingBox.copy(this.cube.geometry.boundingBox).applyMatrix4(this.cube.matrixWorld);
     }
 
-    shoot(speed) {
-        return null;
+    shoot(speed, airplane) {
+        if(this.shootPermission){
+            let bullet = new EnemyBullet(speed);
+            bullet.create(this);
+            bullet.sphere.lookAt(airplane.cone.position);
+            this.shootPermission = false;
+            return bullet;
+        }
+        else {
+            return null;
+        }
     }
 
     //Checa colisão do objeto com todos os mísseis na tela
@@ -157,6 +173,8 @@ export class diagonalEnemy {
         this.cube = new THREE.Mesh( this.geometry, this.material );
         this.speed = speed;
         this.boundingBox = new THREE.Box3().setFromObject(this.cube);
+        this.shootPermission = false;
+        this.startTime = new Date();
         // this.cube.geometry.computeBoundingBox();
         return;
     }
@@ -169,13 +187,27 @@ export class diagonalEnemy {
 
     //Movimenta com base em sua velocidade
     update() {
+        let endTime = new Date();
+        if(endTime - this.startTime > 1000) {
+            this.shootPermission = true;
+            this.startTime = new Date();
+        }
         this.cube.translateZ(this.speed);
         this.cube.translateX(this.speed);
         this.boundingBox.copy(this.cube.geometry.boundingBox).applyMatrix4(this.cube.matrixWorld);
     }
 
-    shoot(speed) {
-        return null;
+    shoot(speed, airplane) {
+        if(this.shootPermission){
+            let bullet = new EnemyBullet(speed);
+            bullet.create(this);
+            bullet.sphere.lookAt(airplane.cone.position);
+            this.shootPermission = false;
+            return bullet;
+        }
+        else {
+            return null;
+        }
     }
 
     //Checa colisão do objeto com todos os mísseis na tela
