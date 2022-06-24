@@ -1,6 +1,6 @@
 import * as THREE from  'three';
 import { degreesToRadians } from '../../libs/util/util.js';
-import { Bullet } from './bullets.js';
+import { Bomb, Bullet } from './bullets.js';
 
 {/**
     Classe referente ao objeto que controla as
@@ -16,13 +16,20 @@ export class Airplane {
         this.startTime = new Date();
         this.life = 5;
         this.damageTime = new Date();
+        this.bombPermission = false;
+        this.bombStartTime = new Date();
     }
 
     update(speed) {
         let endTime = new Date();
+        let bombEndTime = new Date();
         if(endTime - this.startTime >= 500) {
             this.shootPermission = true;
             this.startTime = new Date();
+        }
+        if(bombEndTime - this.bombStartTime >= 500) {
+            this.bombPermission = true;
+            this.bombStartTime = new Date();
         }
         this.cone.translateY(speed);
         this.boundingBox.copy(this.cone.geometry.boundingBox).applyMatrix4(this.cone.matrixWorld);
@@ -52,6 +59,19 @@ export class Airplane {
             game.addOnScene(bullet.sphere);
             this.shootPermission = false;
             return bullet;
+        }
+        else {
+            return null;
+        }
+    }
+
+    bomb(speed, airplane, game) {
+        if(this.bombPermission){
+            let bomb = new Bomb(speed);
+            bomb.create(airplane);
+            game.addOnScene(bomb.sphere);
+            this.bombPermission = false;
+            return bomb;
         }
         else {
             return null;
