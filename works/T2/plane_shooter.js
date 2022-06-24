@@ -95,8 +95,20 @@ function spawnEnemy(type){
     }
 }
 
-function switchPermission(){
-    game.spawnPermission = !game.spawnPermission;
+function spawnLife(){
+    let new_life = new Life();
+    new_life.setPosition(Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1), 5,
+    game.cameraHolder.position.z - 300);
+    lives.push(new_life);
+    game.scene.add(new_life.life);
+}
+
+function switchEnemySpawnPermission(){
+    game.enemySpawnPermission = !game.enemySpawnPermission;
+}
+
+function switchLifeSpawnPermission(){
+    game.enemySpawnPermission = !game.enemySpawnPermission;
 }
 
 class Game {
@@ -119,8 +131,10 @@ class Game {
         this.SPAWN_PROBABILITY = 0.05;
         this.LIFE_SPAWN_PROBABILITY = 0.0025;
         this.levelDuration = [20000, 5000, 20000, 5000, 20000]
-        this.spawnPermission = true;
-        this.spawnWait = 800;
+        this.enemySpawnPermission = true;
+        this.lifeSpawnPermission = false;
+        this.enemySpawnWait = 800;
+        this.lifeSpawnWait = 2000;
     }
 
     init(airplane, scenario) {
@@ -158,54 +172,55 @@ class Game {
 
     //Adiciona novos inimigos em tempo de jogo com posicao e velocidade aleatórias
     update() {
-        if (Math.random() < this.LIFE_SPAWN_PROBABILITY) {
-            let new_life = new Life();
-            new_life.setPosition(Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1), 5,
-            this.cameraHolder.position.z - 300);
-            lives.push(new_life);
-            this.scene.add(new_life.life);
-        }
-        
-
-        if(this.game_level == 0 && this.spawnPermission){
+        if(this.game_level == 0 && this.enemySpawnPermission){
             spawnEnemy('line');
             spawnEnemy('line');
-            this.spawnPermission = false;
-            var permissionTimer1 = new Timer(switchPermission, this.spawnWait);
+            this.enemySpawnPermission = false;
+            var permissionTimer1 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
             timers[0] = permissionTimer1;
         }
-        if(this.game_level == 1 && this.spawnPermission){
-            this.spawnWait = 650;
+        if(this.game_level == 1 && this.enemySpawnPermission){
+            this.enemySpawnWait = 650;
             spawnEnemy('line');
             spawnEnemy('line');
-            this.spawnPermission = false;
-            var permissionTimer2 = new Timer(switchPermission, this.spawnWait);
-            timers[1] = permissionTimer2;
+            this.enemySpawnPermission = false;
+            timers[0].cancel();
+            var permissionTimer2 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
+            timers[0] = permissionTimer2;
         }
-        if(this.game_level == 2 && this.spawnPermission){
-            this.spawnWait = 1000;
+        if(this.game_level == 2 && this.enemySpawnPermission){
+            this.enemySpawnWait = 1000;
             spawnEnemy('line');
             spawnEnemy('arch');
-            this.spawnPermission = false;
-            var permissionTimer3 = new Timer(switchPermission, this.spawnWait);
-            timers[2] = permissionTimer3;
+            this.enemySpawnPermission = false;
+            timers[0].cancel();
+            var permissionTimer3 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
+            timers[0] = permissionTimer3;
         }
-        if(this.game_level == 3 && this.spawnPermission){
-            this.spawnWait = 800;
+        if(this.game_level == 3 && this.enemySpawnPermission){
+            this.enemySpawnWait = 800;
             spawnEnemy('line');
             spawnEnemy('arch');
-            this.spawnPermission = false;
-            var permissionTimer3 = new Timer(switchPermission, this.spawnWait);
-            timers[2] = permissionTimer3;
+            this.enemySpawnPermission = false;
+            timers[0].cancel();
+            var permissionTimer3 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
+            timers[0] = permissionTimer3;
         }
-        if(this.game_level == 4 && this.spawnPermission){
-            this.spawnWait = 1000;
+        if(this.game_level == 4 && this.enemySpawnPermission){
+            this.enemySpawnWait = 1000;
             spawnEnemy('line');
             spawnEnemy('diag');
             spawnEnemy('arch');
-            this.spawnPermission = false;
-            var permissionTimer3 = new Timer(switchPermission, this.spawnWait);
-            timers[2] = permissionTimer3;
+            this.enemySpawnPermission = false;
+            timers[0].cancel();
+            var permissionTimer3 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
+            timers[0] = permissionTimer3;
+        }
+        if(this.lifeSpawnPermission){
+            spawnLife();
+            this.lifeSpawnPermission = false;
+            var permissionTimer4 = new Timer(switchLifeSpawnPermission, this.lifeSpawnWait);
+            timers[1] = permissionTimer4;
         }
     }
 }
@@ -260,7 +275,7 @@ function fullReset() {
     airplane.life = 5;
     game.started = false;
     game.running = false;
-    game.spawnPermission = true;
+    game.enemySpawnPermission = true;
 
     for(var i = 0; i < timers.length; i++){
         if(timers[i] != null){
@@ -288,13 +303,13 @@ function keyboardUpdate() {
     if ( keyboard.down("P") ) {
         if(!game.started){
             var levelOneTimer = new Timer(advance_level, sumFirstElements(game.levelDuration, 1));
-            timers[3] = levelOneTimer;
+            timers[2] = levelOneTimer;
             var levelTwoTimer = new Timer(advance_level, sumFirstElements(game.levelDuration, 2));
-            timers[4] = levelTwoTimer;
+            timers[3] = levelTwoTimer;
             var levelThreeTimer = new Timer(advance_level, sumFirstElements(game.levelDuration, 3));
-            timers[5] = levelThreeTimer;
+            timers[4] = levelThreeTimer;
             var levelFourTimer = new Timer(advance_level, sumFirstElements(game.levelDuration, 4));
-            timers[6] = levelFourTimer;
+            timers[5] = levelFourTimer;
             game.started = true;
         }
         else{
