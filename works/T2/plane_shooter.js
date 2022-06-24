@@ -21,19 +21,89 @@ let bullets = [];
 let enemyBullets = [];
 let enemies = [];
 let lives = [];
+let timers = [];
 
 
-const reset_array = (array) => {
+const clearGeometryArray = (array) => {
     array.forEach((element, idx) => {
         game.scene.remove(element.getGeometry());
         array.splice(idx, 1)
     });
 };
 
+var Timer = function(callback, delay) {
+    var timerId, start, remaining = delay;
+
+    this.pause = function() {
+        window.clearTimeout(timerId);
+        timerId = null;
+        remaining -= Date.now() - start;
+    };
+
+    this.resume = function() {
+        if (timerId) {
+            return;
+        }
+
+        start = Date.now();
+        timerId = window.setTimeout(callback, remaining);
+    };
+
+    this.cancel = function() {
+        window.clearTimeout(timerId);
+        timerId = null;
+    };
+
+    this.resume();
+};
+
+function spawnEnemy(type){
+    if(type == 'line'){
+        var new_enemy = new lineEnemy(1);
+        new_enemy.setPosition(Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1), 5,
+                                game.cameraHolder.position.z - 300);
+        enemies.push(new_enemy);
+        game.scene.add(new_enemy.cube);
+    }
+    if(type == 'arch'){
+        if(Math.random() >= 0.5){
+            var new_enemy = new archEnemy('right');
+            new_enemy.setPosition(-150, 5, game.cameraHolder.position.z - 270);
+            enemies.push(new_enemy);
+            game.scene.add(new_enemy.cube);
+        }
+        else{
+            var new_enemy = new archEnemy('left');
+            new_enemy.setPosition(150, 5, game.cameraHolder.position.z - 270);
+            enemies.push(new_enemy);
+            game.scene.add(new_enemy.cube);
+        }
+    }
+    if(type == 'diag'){
+        if(Math.random() >= 0.5){
+            var new_enemy = new diagonalEnemy(1, 'right');
+            new_enemy.setPosition(-70, 5, game.cameraHolder.position.z - 270);
+            enemies.push(new_enemy);
+            game.scene.add(new_enemy.cube);
+        }
+        else{
+            var new_enemy = new diagonalEnemy(1, 'left');
+            new_enemy.setPosition(70, 5, game.cameraHolder.position.z - 300);
+            enemies.push(new_enemy);
+            game.scene.add(new_enemy.cube);
+        }
+    }
+}
+
+function switchPermission(){
+    game.spawnPermission = !game.spawnPermission;
+}
+
 class Game {
     constructor() {
         this.started = false;
         this.running = false;
+        this.paused = false;
         this.isGodMode = false;
         this.scene = new THREE.Scene();    // Create main scene
         this.renderer = initRenderer();    // Init a basic renderer
@@ -48,13 +118,9 @@ class Game {
         this.game_level = 0;
         this.SPAWN_PROBABILITY = 0.05;
         this.LIFE_SPAWN_PROBABILITY = 0.0025;
-        this.firstTimeout = null
-        this.secondTimeout = null
-        this.thirdTimeout = null
-        this.firstLevelDuration = 1000
-        this.secondLevelDuration = 15000
-        this.thirdLevelDuration = 20000
-        this.forthLevelDuration = 30000
+        this.levelDuration = [100000, 300, 1000, 300]
+        this.spawnPermission = true;
+        this.spawnWait = 800;
     }
 
     init(airplane, scenario) {
@@ -99,33 +165,30 @@ class Game {
             lives.push(new_life);
             this.scene.add(new_life.life);
         }
+        
 
-        if(this.game_level == 0){
-            if (Math.random() < this.SPAWN_PROBABILITY) {
-                var new_enemy = new lineEnemy(Math.random() * 2);
-                new_enemy.setPosition(Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1), 5,
-                this.cameraHolder.position.z - 300);
-                enemies.push(new_enemy)
-                this.scene.add(new_enemy.cube)
-            }
+        if(this.game_level == 0 && this.spawnPermission){
+            spawnEnemy('line');
+            spawnEnemy('arch');
+            this.spawnPermission = false;
+            var permissionTimer1 = new Timer(switchPermission, this.spawnWait);
+            timers[0] = permissionTimer1;
         }
-        if(this.game_level == 1){
-            if (Math.random() < this.SPAWN_PROBABILITY) {
-                var new_enemy = new archEnemy();
-                new_enemy.setPosition(-150, 5, this.cameraHolder.position.z - 270);
-                enemies.push(new_enemy)
-                this.scene.add(new_enemy.cube)
-            }
+        if(this.game_level == 1 && this.spawnPermission){
+            this.spawnWait = 650;
+            spawnEnemy('line');
+            spawnEnemy('line');
+            this.spawnPermission = false;
+            var permissionTimer2 = new Timer(switchPermission, this.spawnWait);
+            timers[1] = permissionTimer2;
         }
-        if(this.game_level >= 2){
-            if (Math.random() < this.SPAWN_PROBABILITY) {
-                var new_enemy = new diagonalEnemy(Math.random() * 2);
-                new_enemy.setPosition(-70, 5, this.cameraHolder.position.z - 300);
-                enemies.push(new_enemy)
-                this.scene.add(new_enemy.cube)
-            }
+        if(this.game_level == 2 && this.spawnPermission){
+            spawnEnemy('line');
+            spawnEnemy('diag');
+            this.spawnPermission = false;
+            var permissionTimer3 = new Timer(switchPermission, this.spawnWait);
+            timers[2] = permissionTimer3;
         }
-        console.log('game level', this.game_level);
     }
 }
 
@@ -166,24 +229,37 @@ controls.show();
 render();
 
 function fullReset() {
-    clearTimeout(game.firstTimeout);
-    clearTimeout(game.secondTimeout);
-    clearTimeout(game.thirdTimeout);
     main_scenario.reset();
     game.reset(airplane, main_scenario);
     game.game_level = 0;
-    reset_array(bullets);
-    reset_array(enemies);
-    reset_array(enemyBullets);
-    reset_array(lives);
+    clearGeometryArray(bullets);
+    clearGeometryArray(enemies);
+    clearGeometryArray(enemyBullets);
+    clearGeometryArray(lives);
     airplane.cone.scale.set(1, 1, 1);
     airplane.life = 5;
     game.started = false;
     game.running = false;
+    game.spawnPermission = true;
+
+    for(var i = 0; i < timers.length; i++){
+        if(timers[i] != null){
+            timers[i].cancel();
+        }
+    }
+    timers = [];
 }
 
 function advance_level() {
     game.game_level++;
+}
+
+function sumFirstElements(array, n){
+    var sum = 0;
+    for(var i = 0; i < n; i++){
+        sum += array[i];
+    }
+    return sum;
 }
 
 function keyboardUpdate() {
@@ -191,11 +267,34 @@ function keyboardUpdate() {
 
     if ( keyboard.down("P") ) {
         if(!game.started){
-            game.firstTimeout = setTimeout(advance_level, game.firstLevelDuration);
-            game.secondTimeout = setTimeout(advance_level, game.firstLevelDuration + game.secondLevelDuration);
-            game.thirdTimeout = setTimeout(advance_level, game.firstLevelDuration + game.secondLevelDuration + game.thirdLevelDuration);
+            var levelOneTimer = new Timer(advance_level, sumFirstElements(game.levelDuration, 1));
+            timers[3] = levelOneTimer;
+            var levelTwoTimer = new Timer(advance_level, sumFirstElements(game.levelDuration, 2));
+            timers[4] = levelTwoTimer;
+            var levelThreeTimer = new Timer(advance_level, sumFirstElements(game.levelDuration, 3));
+            timers[5] = levelThreeTimer;
+            var levelFourTimer = new Timer(advance_level, sumFirstElements(game.levelDuration, 4));
+            timers[6] = levelFourTimer;
+            game.started = true;
         }
-        game.started = true;
+        else{
+            if(!game.paused){
+                for(var i = 0; i < timers.length; i++){
+                    if(timers[i] != null){
+                        timers[i].pause();
+                    }
+                }
+                game.paused = true;
+            }
+            else{
+                for(var i = 0; i < timers.length; i++){
+                    if(timers[i] != null){
+                        timers[i].resume();
+                    }
+                }
+                game.paused = false;
+            }
+        }
         game.running = !game.running;
     }
     if ( keyboard.pressed("R") ) {
@@ -250,7 +349,7 @@ async function checkBoundariesAndCollisions() {
         }
         
         //Removendo inimigos que saíram da tela
-        if(enemies[i].cube.position.z > game.cameraHolder.position.z - 40 || enemies[i].cube.position.x > 100 || 
+        if(enemies[i].cube.position.z > game.cameraHolder.position.z - 40 || enemies[i].cube.position.x > 151 || 
             enemies[i].cube.position.x < -200) {
             game.scene.remove(enemies[i].cube);
             enemies.splice(i, 1);
