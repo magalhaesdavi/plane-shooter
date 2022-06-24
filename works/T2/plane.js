@@ -54,7 +54,7 @@ export class Airplane {
 
     shoot(speed, airplane, game) {
         if(this.shootPermission){
-            let bullet = new Bullet(speed);
+            let bullet = new Bullet(speed, 0x2be3c1);
             bullet.create(airplane);
             game.addOnScene(bullet.sphere);
             this.shootPermission = false;

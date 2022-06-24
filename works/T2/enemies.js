@@ -14,7 +14,7 @@ function degreesToRadians(degrees)
 */}
 export class lineEnemy {
     constructor(speed) {
-        this.geometry = new THREE.BoxGeometry( 4, 4, 4 );
+        this.geometry = new THREE.BoxGeometry( 5, 5, 5 );
         this.material = new THREE.MeshLambertMaterial({color: 0xFF0000});
         this.cube = new THREE.Mesh( this.geometry, this.material );
         this.speed = speed;
@@ -33,7 +33,7 @@ export class lineEnemy {
     //Movimenta com base em sua velocidade
     update() {
         let endTime = new Date();
-        if(endTime - this.startTime > 1200) {
+        if(endTime - this.startTime > 1000) {
             this.shootPermission = true;
             this.startTime = new Date();
         }
@@ -80,17 +80,15 @@ export class lineEnemy {
 }
 
 export class archEnemy {
-    constructor(direction) {
-        this.geometry = new THREE.BoxGeometry( 4, 4, 4 );
+    constructor(speed) {
+        this.geometry = new THREE.BoxGeometry( 5, 5, 5 );
         this.material = new THREE.MeshLambertMaterial({color: 0xFF0000});
         this.cube = new THREE.Mesh( this.geometry, this.material );
-        this.speed = 1.1;
+        this.speed = speed;
         this.boundingBox = new THREE.Box3().setFromObject(this.cube);
         this.shootPermission = false;
         this.startTime = new Date();
-        // this.angle = 1;
-        this.turnAngle = 1.25;
-        this.direction = direction;
+        this.t = 0;
         // this.cube.geometry.computeBoundingBox();
         return;
     }
@@ -104,24 +102,30 @@ export class archEnemy {
     // WORK IN PROGRESS
     //Movimenta com base em sua velocidade
     update() {
-        // if(this.cube.position.x >= 0) {
-        //     this.angle = 1.7
-        // }
         let endTime = new Date();
         if(endTime - this.startTime > 1000) {
             this.shootPermission = true;
             this.startTime = new Date();
         }
-        if(this.direction == 'right'){
-            this.cube.rotateY(degreesToRadians(this.turnAngle));
-            this.cube.translateZ(this.speed + 1.85*(this.cube.rotation.y));
-        }
-        if(this.direction == 'left'){
-            this.cube.rotateY(degreesToRadians(-this.turnAngle));
-            this.cube.translateZ(this.speed + 1.85*(-this.cube.rotation.y));
-        }
+        
+        this.cube.rotateY(degreesToRadians(1.25));
+        this.cube.translateZ(1 + 1.85*(this.cube.rotation.y));
 
-        // this.angle = 1;
+        // this.cube.translateZ( ( Math.sin(-1 * this.t) + 1));
+        // this.cube.translateX( ( Math.cos(this.t) + 1));
+        // this.t = (this.t + 0.07) % 360;
+
+        // this.cube.position.x += Math.sin(this.speed * Math.PI * 2) * 50;
+        // this.cube.position.z += Math.sin(this.speed * Math.PI * 2) * 50;
+        // this.speed += 0.01
+
+        // this.cube.rotateY(degreesToRadians(1));
+
+        // this.t += 0.1; 
+        // this.cube.rotation.y += 0.005;
+        // this.cube.position.x = 20*Math.cos(this.t) + 0;
+        // this.cube.position.z = 20*Math.sin(this.t) + 0;
+
         this.boundingBox.copy(this.cube.geometry.boundingBox).applyMatrix4(this.cube.matrixWorld);
     }
 
@@ -164,15 +168,14 @@ export class archEnemy {
 }
 
 export class diagonalEnemy {
-    constructor(speed, direction) {
-        this.geometry = new THREE.BoxGeometry( 4, 4, 4 );
+    constructor(speed) {
+        this.geometry = new THREE.BoxGeometry( 5, 5, 5 );
         this.material = new THREE.MeshLambertMaterial({color: 0xFF0000});
         this.cube = new THREE.Mesh( this.geometry, this.material );
         this.speed = speed;
         this.boundingBox = new THREE.Box3().setFromObject(this.cube);
         this.shootPermission = false;
         this.startTime = new Date();
-        this.direction = direction;
         // this.cube.geometry.computeBoundingBox();
         return;
     }
@@ -186,20 +189,12 @@ export class diagonalEnemy {
     //Movimenta com base em sua velocidade
     update() {
         let endTime = new Date();
-        if(endTime - this.startTime > 1000) {
+        if(endTime - this.startTime > 950) {
             this.shootPermission = true;
             this.startTime = new Date();
         }
-
-        if(this.direction == 'right'){
-            this.cube.translateZ(this.speed);
-            this.cube.translateX(this.speed);
-        }
-        if(this.direction == 'left'){
-            this.cube.translateZ(this.speed);
-            this.cube.translateX(-this.speed);
-        }
-
+        this.cube.translateZ(this.speed);
+        this.cube.translateX(this.speed);
         this.boundingBox.copy(this.cube.geometry.boundingBox).applyMatrix4(this.cube.matrixWorld);
     }
 

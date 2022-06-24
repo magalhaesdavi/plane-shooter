@@ -6,9 +6,9 @@ import { degreesToRadians } from '../../libs/util/util.js';
     funcionalidades dos projetes que o avião atira'.
 */}
 export class Bullet {
-    constructor(speed) {
+    constructor(speed, color = null) {
         this.geometry = new THREE.SphereGeometry( 0.75, 32, 32 );
-        this.material = new THREE.MeshLambertMaterial( { color: 0xffa500 } );
+        this.material = new THREE.MeshLambertMaterial( { color: color ? color : 0xffa500 } );
         this.sphere = new THREE.Mesh( this.geometry, this.material );
         this.speed = speed * 2.25;
         this.boundingBox = new THREE.Box3().setFromObject(this.sphere);
@@ -71,9 +71,9 @@ export class Bomb {
     funcionalidades dos projetes que os inimigos atiram'.
 */}
 export class EnemyBullet {
-    constructor(speed) {
+    constructor(speed, color = null) {
         this.geometry = new THREE.SphereGeometry( 0.75, 32, 32 );
-        this.material = new THREE.MeshLambertMaterial( { color: 0xffa500 } );
+        this.material = new THREE.MeshLambertMaterial( { color: color ? color : 0xffa500 } );
         this.sphere = new THREE.Mesh( this.geometry, this.material );
         this.speed = speed * 1.25;
         this.boundingBox = new THREE.Box3().setFromObject(this.sphere);
