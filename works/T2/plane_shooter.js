@@ -108,7 +108,7 @@ function switchEnemySpawnPermission(){
 }
 
 function switchLifeSpawnPermission(){
-    game.enemySpawnPermission = !game.enemySpawnPermission;
+    game.lifeSpawnPermission = !game.lifeSpawnPermission;
 }
 
 class Game {
@@ -127,14 +127,14 @@ class Game {
         this.cameraHolder.add(this.camera);
         this.scene.add(this.cameraHolder);
 
-        this.game_level = 0;
-        this.SPAWN_PROBABILITY = 0.05;
+        this.gameLevel = 0;
+        this.ENEMY_SPAWN_PROBABILITY = 0.05;
         this.LIFE_SPAWN_PROBABILITY = 0.0025;
         this.levelDuration = [20000, 5000, 20000, 5000, 20000]
         this.enemySpawnPermission = true;
-        this.lifeSpawnPermission = false;
+        this.lifeSpawnPermission = true;
         this.enemySpawnWait = 800;
-        this.lifeSpawnWait = 2000;
+        this.lifeSpawnWait = 8000;
     }
 
     init(airplane, scenario) {
@@ -172,51 +172,47 @@ class Game {
 
     //Adiciona novos inimigos em tempo de jogo com posicao e velocidade aleatórias
     update() {
-        if(this.game_level == 0 && this.enemySpawnPermission){
+        if(this.gameLevel == 0 && this.enemySpawnPermission){
             spawnEnemy('line');
             spawnEnemy('line');
             this.enemySpawnPermission = false;
             var permissionTimer1 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
             timers[0] = permissionTimer1;
         }
-        if(this.game_level == 1 && this.enemySpawnPermission){
+        if(this.gameLevel == 1 && this.enemySpawnPermission){
             this.enemySpawnWait = 650;
             spawnEnemy('line');
             spawnEnemy('line');
             this.enemySpawnPermission = false;
-            timers[0].cancel();
             var permissionTimer2 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
             timers[0] = permissionTimer2;
         }
-        if(this.game_level == 2 && this.enemySpawnPermission){
+        if(this.gameLevel == 2 && this.enemySpawnPermission){
             this.enemySpawnWait = 1000;
             spawnEnemy('line');
             spawnEnemy('arch');
             this.enemySpawnPermission = false;
-            timers[0].cancel();
             var permissionTimer3 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
             timers[0] = permissionTimer3;
         }
-        if(this.game_level == 3 && this.enemySpawnPermission){
+        if(this.gameLevel == 3 && this.enemySpawnPermission){
             this.enemySpawnWait = 800;
             spawnEnemy('line');
             spawnEnemy('arch');
             this.enemySpawnPermission = false;
-            timers[0].cancel();
             var permissionTimer3 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
             timers[0] = permissionTimer3;
         }
-        if(this.game_level == 4 && this.enemySpawnPermission){
+        if(this.gameLevel == 4 && this.enemySpawnPermission){
             this.enemySpawnWait = 1000;
             spawnEnemy('line');
             spawnEnemy('diag');
             spawnEnemy('arch');
             this.enemySpawnPermission = false;
-            timers[0].cancel();
             var permissionTimer3 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
             timers[0] = permissionTimer3;
         }
-        if(this.lifeSpawnPermission){
+        if(this.gameLevel >= 1 && this.lifeSpawnPermission){
             spawnLife();
             this.lifeSpawnPermission = false;
             var permissionTimer4 = new Timer(switchLifeSpawnPermission, this.lifeSpawnWait);
@@ -266,7 +262,7 @@ render();
 function fullReset() {
     main_scenario.reset();
     game.reset(airplane, main_scenario);
-    game.game_level = 0;
+    game.gameLevel = 0;
     clearGeometryArray(bullets);
     clearGeometryArray(enemies);
     clearGeometryArray(enemyBullets);
@@ -286,7 +282,7 @@ function fullReset() {
 }
 
 function advance_level() {
-    game.game_level++;
+    game.gameLevel++;
 }
 
 function sumFirstElements(array, n){
