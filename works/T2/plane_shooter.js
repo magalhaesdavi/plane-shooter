@@ -15,6 +15,7 @@ import { Scenario } from './scenario.js';
 import { Airplane } from './plane.js';
 import { lineEnemy, archEnemy, diagonalEnemy, GroundEnemy } from './enemies.js';
 import { Life } from './life.js';
+import { GroundAirEnemyMissile } from './bullets.js';
 
 const CAMERA_HEIGHT = 110;
 const AIR_ENEMIES_HEIGHT = 20;
@@ -505,7 +506,9 @@ async function checkBoundariesAndCollisions() {
             let shot = airplane.checkMissileCollision(enemyBullets);
             
             if(shot > -1) {
+                const isGroundMissile = (enemyBullets[shot] instanceof GroundAirEnemyMissile);
                 let endTime = new Date();
+
                 if(endTime - airplane.damageTime >= 100) {
                     game.scene.remove(enemyBullets[j].sphere);
                     enemyBullets.splice(j, 1);
@@ -516,7 +519,11 @@ async function checkBoundariesAndCollisions() {
                         gsap.to(airplane.cone.scale, { x:0.4, y: 0.4, z: 0.4, duration: 0.1 });
                         await sleep(100)
                         gsap.to(airplane.cone.scale, { x:1, y: 1, z: 1, duration: 0.1 });
-                        airplane.decreaseLife(1);
+
+                        if (isGroundMissile)
+                            airplane.decreaseLife(2);
+                        else
+                            airplane.decreaseLife(1);
                     }
                     else { // Aviao morre
                         //Animação de colisão
