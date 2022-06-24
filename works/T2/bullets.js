@@ -35,6 +35,37 @@ export class Bullet {
     }
 }
 
+export class Bomb {
+    constructor(speed) {
+        this.geometry = new THREE.SphereGeometry( 0.75, 32, 32 );
+        this.material = new THREE.MeshLambertMaterial( { color: 0xff471a } );
+        this.sphere = new THREE.Mesh( this.geometry, this.material );
+        this.speed = speed * 2.25;
+        this.boundingBox = new THREE.Box3().setFromObject(this.sphere);
+        this.turnAngle = 1.15;
+        return;
+    }
+
+    create(airplane) {
+        this.sphere.position.set(
+            airplane.cone.position.x,
+            airplane.cone.position.y,
+            airplane.cone.position.z - 5
+        );
+        return;
+    }
+
+    update() {
+        this.sphere.translateZ(-this.speed);
+        this.sphere.rotateX(degreesToRadians(-this.turnAngle));
+        this.boundingBox.copy(this.sphere.geometry.boundingBox).applyMatrix4(this.sphere.matrixWorld);
+    }
+
+    getGeometry() {
+        return this.sphere;
+    }
+}
+
 {/**
     Classe referente ao objeto que controla as
     funcionalidades dos projetes que os inimigos atiram'.
