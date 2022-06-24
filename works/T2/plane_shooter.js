@@ -118,7 +118,7 @@ class Game {
         this.game_level = 0;
         this.SPAWN_PROBABILITY = 0.05;
         this.LIFE_SPAWN_PROBABILITY = 0.0025;
-        this.levelDuration = [100000, 300, 1000, 300]
+        this.levelDuration = [20000, 5000, 20000, 5000, 20000]
         this.spawnPermission = true;
         this.spawnWait = 800;
     }
@@ -169,7 +169,7 @@ class Game {
 
         if(this.game_level == 0 && this.spawnPermission){
             spawnEnemy('line');
-            spawnEnemy('arch');
+            spawnEnemy('line');
             this.spawnPermission = false;
             var permissionTimer1 = new Timer(switchPermission, this.spawnWait);
             timers[0] = permissionTimer1;
@@ -183,8 +183,26 @@ class Game {
             timers[1] = permissionTimer2;
         }
         if(this.game_level == 2 && this.spawnPermission){
+            this.spawnWait = 1000;
+            spawnEnemy('line');
+            spawnEnemy('arch');
+            this.spawnPermission = false;
+            var permissionTimer3 = new Timer(switchPermission, this.spawnWait);
+            timers[2] = permissionTimer3;
+        }
+        if(this.game_level == 3 && this.spawnPermission){
+            this.spawnWait = 800;
+            spawnEnemy('line');
+            spawnEnemy('arch');
+            this.spawnPermission = false;
+            var permissionTimer3 = new Timer(switchPermission, this.spawnWait);
+            timers[2] = permissionTimer3;
+        }
+        if(this.game_level == 4 && this.spawnPermission){
+            this.spawnWait = 1000;
             spawnEnemy('line');
             spawnEnemy('diag');
+            spawnEnemy('arch');
             this.spawnPermission = false;
             var permissionTimer3 = new Timer(switchPermission, this.spawnWait);
             timers[2] = permissionTimer3;
