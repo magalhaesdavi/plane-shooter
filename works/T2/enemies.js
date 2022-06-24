@@ -33,7 +33,7 @@ export class lineEnemy {
     //Movimenta com base em sua velocidade
     update() {
         let endTime = new Date();
-        if(endTime - this.startTime > 1000) {
+        if(endTime - this.startTime > 1200) {
             this.shootPermission = true;
             this.startTime = new Date();
         }
@@ -80,7 +80,7 @@ export class lineEnemy {
 }
 
 export class archEnemy {
-    constructor() {
+    constructor(direction) {
         this.geometry = new THREE.BoxGeometry( 4, 4, 4 );
         this.material = new THREE.MeshLambertMaterial({color: 0xFF0000});
         this.cube = new THREE.Mesh( this.geometry, this.material );
@@ -90,6 +90,7 @@ export class archEnemy {
         this.startTime = new Date();
         // this.angle = 1;
         this.turnAngle = 1.25;
+        this.direction = direction;
         // this.cube.geometry.computeBoundingBox();
         return;
     }
@@ -111,9 +112,14 @@ export class archEnemy {
             this.shootPermission = true;
             this.startTime = new Date();
         }
-        
-        this.cube.rotateY(degreesToRadians(this.turnAngle));
-        this.cube.translateZ(this.speed + 1.85*(this.cube.rotation.y));
+        if(this.direction == 'right'){
+            this.cube.rotateY(degreesToRadians(this.turnAngle));
+            this.cube.translateZ(this.speed + 1.85*(this.cube.rotation.y));
+        }
+        if(this.direction == 'left'){
+            this.cube.rotateY(degreesToRadians(-this.turnAngle));
+            this.cube.translateZ(this.speed + 1.85*(-this.cube.rotation.y));
+        }
 
         // this.angle = 1;
         this.boundingBox.copy(this.cube.geometry.boundingBox).applyMatrix4(this.cube.matrixWorld);
@@ -158,7 +164,7 @@ export class archEnemy {
 }
 
 export class diagonalEnemy {
-    constructor(speed) {
+    constructor(speed, direction) {
         this.geometry = new THREE.BoxGeometry( 4, 4, 4 );
         this.material = new THREE.MeshLambertMaterial({color: 0xFF0000});
         this.cube = new THREE.Mesh( this.geometry, this.material );
@@ -166,6 +172,7 @@ export class diagonalEnemy {
         this.boundingBox = new THREE.Box3().setFromObject(this.cube);
         this.shootPermission = false;
         this.startTime = new Date();
+        this.direction = direction;
         // this.cube.geometry.computeBoundingBox();
         return;
     }
@@ -183,8 +190,16 @@ export class diagonalEnemy {
             this.shootPermission = true;
             this.startTime = new Date();
         }
-        this.cube.translateZ(this.speed);
-        this.cube.translateX(this.speed);
+
+        if(this.direction == 'right'){
+            this.cube.translateZ(this.speed);
+            this.cube.translateX(this.speed);
+        }
+        if(this.direction == 'left'){
+            this.cube.translateZ(this.speed);
+            this.cube.translateX(-this.speed);
+        }
+
         this.boundingBox.copy(this.cube.geometry.boundingBox).applyMatrix4(this.cube.matrixWorld);
     }
 
