@@ -159,6 +159,8 @@ controls.add("Plane Shooter");
 controls.addParagraph();
 controls.add("Use keyboard to interact:");
 controls.add("* Press P to start/pause");
+controls.add("* Press CTRL/SPACE to shoot");
+controls.add("* G to turn on/off God Mode");
 controls.add("* R to reset the game");
 controls.add("* Use arrows to move the airplane");
 controls.show();
@@ -224,6 +226,10 @@ function keyboardUpdate() {
     }
     if (keyboard.pressed("space") && game.running) {
         //novo tiro do aviao para baixo
+        let bomb = airplane.bomb(SPEED, airplane, game);
+        if (bomb != null) {
+            bullets.push(bomb);
+        }
     }
     if (keyboard.pressed("ctrl") && game.running ) {
         let bullet = airplane.shoot(SPEED, airplane, game);
@@ -385,7 +391,7 @@ async function checkBoundariesAndCollisions() {
 
     //Removendo mísseis que saíram da tela
     for(var i = 0; i < bullets.length; i++) {
-        if(bullets[i].sphere.position.z < game.cameraHolder.position.z - 200) {
+        if(bullets[i].sphere.position.z < (game.cameraHolder.position.z - 200) || bullets[i].sphere.position.y < -1) {
             game.scene.remove(bullets[i].sphere);
             bullets.splice(i, 1);
         }
