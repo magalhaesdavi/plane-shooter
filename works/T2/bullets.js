@@ -42,7 +42,7 @@ export class Bomb {
         this.sphere = new THREE.Mesh( this.geometry, this.material );
         this.speed = speed * 2.25;
         this.boundingBox = new THREE.Box3().setFromObject(this.sphere);
-        this.turnAngle = 1.15;
+        this.turnAngle = 1.35;
         return;
     }
 
@@ -91,6 +91,55 @@ export class EnemyBullet {
 
     update() {
         this.sphere.translateZ(this.speed);
+        this.boundingBox.copy(this.sphere.geometry.boundingBox).applyMatrix4(this.sphere.matrixWorld);
+    }
+
+    
+    //Checa colisão do objeto com o avião
+    checkPlaneCollision(plane) {
+        if(this.boundingBox.intersectsBox(plane.boundingBox)) {
+            return true;
+        }
+        return false;
+    }
+
+    getGeometry() {
+        return this.sphere;
+    }
+}
+
+export class GroundAirEnemyMissile {
+    constructor(speed, color = null) {
+        this.geometry = new THREE.ConeGeometry( 1, 3, 16 );
+        this.material = new THREE.MeshLambertMaterial( { color: color ? color : 0x49fc73 } );
+        this.sphere = new THREE.Mesh( this.geometry, this.material );
+        this.speed = speed * 1.25;
+        this.boundingBox = new THREE.Box3().setFromObject(this.sphere);
+        this.onAirplaneHeight = false;
+        return;
+    }
+
+    create(enemy) {
+        this.sphere.position.set(
+            enemy.cube.position.x,
+            enemy.cube.position.y,
+            enemy.cube.position.z + 5
+        );
+        return;
+    }
+
+    update(airplane) {
+        if (this.onAirplaneHeight) {
+            this.sphere.translateY(this.speed);
+        }
+        else {
+            this.sphere.translateY(this.speed/3);
+            this.onAirplaneHeight = this.sphere.position.y >= airplane.getPosition().y;
+            if (this.onAirplaneHeight) {
+                this.sphere.lookAt(airplane.getPosition());
+                this.sphere.rotateX(degreesToRadians(90));
+            }
+        }
         this.boundingBox.copy(this.sphere.geometry.boundingBox).applyMatrix4(this.sphere.matrixWorld);
     }
 
