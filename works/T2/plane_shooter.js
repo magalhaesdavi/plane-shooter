@@ -13,10 +13,13 @@ import {
 
 import { Scenario } from './scenario.js';
 import { Airplane } from './plane.js';
-import { lineEnemy, archEnemy, diagonalEnemy } from './enemies.js';
+import { lineEnemy, archEnemy, diagonalEnemy, GroundEnemy } from './enemies.js';
 import { Life } from './life.js';
 
+const CAMERA_HEIGHT = 110;
+const AIR_ENEMIES_HEIGHT = 20;
 const SPEED = 1;
+
 let bullets = [];
 let enemyBullets = [];
 let enemies = [];
@@ -60,7 +63,7 @@ var Timer = function(callback, delay) {
 function spawnEnemy(type){
     if(type == 'line'){
         var new_enemy = new lineEnemy(1);
-        new_enemy.setPosition(Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1), 5,
+        new_enemy.setPosition(Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1), AIR_ENEMIES_HEIGHT,
                                 game.cameraHolder.position.z - 300);
         enemies.push(new_enemy);
         game.scene.add(new_enemy.cube);
@@ -68,13 +71,13 @@ function spawnEnemy(type){
     if(type == 'arch'){
         if(Math.random() >= 0.5){
             var new_enemy = new archEnemy('right');
-            new_enemy.setPosition(-150, 5, game.cameraHolder.position.z - 270);
+            new_enemy.setPosition(-150, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 290);
             enemies.push(new_enemy);
             game.scene.add(new_enemy.cube);
         }
         else{
             var new_enemy = new archEnemy('left');
-            new_enemy.setPosition(150, 5, game.cameraHolder.position.z - 270);
+            new_enemy.setPosition(150, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 290);
             enemies.push(new_enemy);
             game.scene.add(new_enemy.cube);
         }
@@ -82,23 +85,36 @@ function spawnEnemy(type){
     if(type == 'diag'){
         if(Math.random() >= 0.5){
             var new_enemy = new diagonalEnemy(1, 'right');
-            new_enemy.setPosition(-70, 5, game.cameraHolder.position.z - 270);
+            new_enemy.setPosition(-70, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 270);
             enemies.push(new_enemy);
             game.scene.add(new_enemy.cube);
         }
         else{
             var new_enemy = new diagonalEnemy(1, 'left');
-            new_enemy.setPosition(70, 5, game.cameraHolder.position.z - 300);
+            new_enemy.setPosition(70, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 300);
             enemies.push(new_enemy);
             game.scene.add(new_enemy.cube);
         }
+    }
+    if (type == 'ground') {
+        let new_enemy = new GroundEnemy(0);
+        new_enemy.setPosition(
+            Math.ceil(Math.random() * 80) * (Math.round(Math.random()) ? 1 : -1),
+            2.5,
+            game.cameraHolder.position.z - 300
+        );
+        enemies.push(new_enemy);
+        game.scene.add(new_enemy.cube);
     }
 }
 
 function spawnLife(){
     let new_life = new Life();
-    new_life.setPosition(Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1), 5,
-    game.cameraHolder.position.z - 300);
+    new_life.setPosition(
+        Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1),
+        AIR_ENEMIES_HEIGHT,
+        game.cameraHolder.position.z - 300
+    );
     lives.push(new_life);
     game.scene.add(new_life.life);
 }
@@ -140,7 +156,7 @@ class Game {
     init(airplane, scenario) {
         this.camera.lookAt(0, 0, 0);
         this.camera.up.set( 0, 1, 0 );
-        this.cameraHolder.position.set(0, 70, 91);
+        this.cameraHolder.position.set(0, CAMERA_HEIGHT, 100);
         this.cameraHolder.rotateX(degreesToRadians(-40));
         
         this.scene.add(scenario.ground_plane);
@@ -151,7 +167,7 @@ class Game {
     }
 
     reset(airplane, scenario) {
-        this.cameraHolder.position.set(0, 70, 91);
+        this.cameraHolder.position.set(0, CAMERA_HEIGHT, 100);
         
         this.scene.add(airplane.cone);
         airplane.setInitialOrResetPosition(false);
@@ -175,14 +191,16 @@ class Game {
         if(this.gameLevel == 0 && this.enemySpawnPermission){
             spawnEnemy('line');
             spawnEnemy('line');
+            spawnEnemy('ground');
             this.enemySpawnPermission = false;
             var permissionTimer1 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
             timers[0] = permissionTimer1;
         }
+        
         if(this.gameLevel == 1 && this.enemySpawnPermission){
             this.enemySpawnWait = 650;
             spawnEnemy('line');
-            spawnEnemy('line');
+            spawnEnemy('ground');
             this.enemySpawnPermission = false;
             var permissionTimer2 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
             timers[0] = permissionTimer2;
@@ -208,6 +226,7 @@ class Game {
             spawnEnemy('line');
             spawnEnemy('diag');
             spawnEnemy('arch');
+            spawnEnemy('ground');
             this.enemySpawnPermission = false;
             var permissionTimer3 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
             timers[0] = permissionTimer3;
@@ -346,7 +365,7 @@ function keyboardUpdate() {
             airplane.cone.translateY(1);
     }
     if ( keyboard.pressed("down") && game.running ) {
-        if ((airplane.cone.position.z - game.cameraHolder.position.z) < -40 )
+        if ((airplane.cone.position.z - game.cameraHolder.position.z) < -50 )
             airplane.cone.translateY(-1);
     }
     if (keyboard.down("G")) {
@@ -375,8 +394,10 @@ const sleep = (ms) => {
 async function checkBoundariesAndCollisions() {
 
     //for INIMIGOS
-    for(var i = 0; i < enemies.length; i++) {
+    for (var i = 0; i < enemies.length; i++) {
+
         enemies[i].update();
+
         let enemy_bullet = enemies[i].shoot(1.4, airplane);
         if (enemy_bullet) {
             game.addOnScene(enemy_bullet.sphere);
@@ -492,14 +513,14 @@ async function checkBoundariesAndCollisions() {
                     // Aviao toma dano
                     if (airplane.life > 1) {
                         //Animacao de dano
-                        gsap.to(airplane.cone.scale, {x:0.4, y: 0.4, z: 0.4, duration: 0.1});
+                        gsap.to(airplane.cone.scale, { x:0.4, y: 0.4, z: 0.4, duration: 0.1 });
                         await sleep(100)
-                        gsap.to(airplane.cone.scale, {x:1, y: 1, z: 1, duration: 0.1});
+                        gsap.to(airplane.cone.scale, { x:1, y: 1, z: 1, duration: 0.1 });
                         airplane.decreaseLife(1);
                     }
                     else { // Aviao morre
                         //Animação de colisão
-                        gsap.to(airplane.cone.scale, {x:0, y: 0, z: 0, duration: 0.25});
+                        gsap.to(airplane.cone.scale, { x:0, y: 0, z: 0, duration: 0.25 });
                         await sleep(500);
                         fullReset();
                     }
@@ -537,7 +558,7 @@ function render()
         });
 
         enemyBullets.forEach(enemyBullet => {
-            enemyBullet.update();
+            enemyBullet.update(airplane);
         });
         
         //Movimento do avião
