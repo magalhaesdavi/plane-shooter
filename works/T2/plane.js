@@ -1,52 +1,21 @@
 import * as THREE from  'three';
-import { degreesToRadians, getMaxSize } from '../../libs/util/util.js';
+import { degreesToRadians } from '../../libs/util/util.js';
 import { Bomb, Bullet } from './bullets.js';
-import { GLTFLoader } from '../../build/jsm/loaders/GLTFLoader.js';
+import { getPlaneObject } from './helper.js';
 
 {/**
     Classe referente ao objeto que controla as
     funcionalidades do avião.
 */}
 
-// Normalize scale and multiple by the newScale
-function normalizeAndRescale(obj, newScale)
-{
-  var scale = getMaxSize(obj); // Available in 'utils.js'
-  obj.scale.set(newScale * (1.0/scale),
-                newScale * (1.0/scale),
-                newScale * (1.0/scale));
-  return obj;
-}
 export class Airplane {
     constructor() {
-        let ob = new THREE.Object3D();
-        var loader = new GLTFLoader();
-
-        loader.load( './assets/plane.glb', function ( gltf ) {
-        var obj = gltf.scene;
-        obj.name = 'Plane';
-        obj.translateZ(-5);
-        obj.rotateX(degreesToRadians(-90));
-        obj.rotateZ(degreesToRadians(180));
-        obj.visible = true;
-        obj.castShadow = true;
-        obj.traverse( function ( child ) {
-            if ( child ) {
-                child.castShadow = true;
-            }
-        });
-
-        var obj = normalizeAndRescale(obj, 10);
-
-        ob.add(obj);
-
-        }, null, null);
-
+        this.planeObject = getPlaneObject();
         this.geometry = new THREE.ConeGeometry( 2, 3, 32 );
         this.material = new THREE.MeshLambertMaterial({color: 'transparent'});
         this.cone = new THREE.Mesh( this.geometry, this.material );
         this.boundingBox = new THREE.Box3().setFromObject(this.cone);
-        this.cone.add(ob);
+        this.cone.add(this.planeObject);
         this.shootPermission = false;
         this.startTime = new Date();
         this.life = 5;
