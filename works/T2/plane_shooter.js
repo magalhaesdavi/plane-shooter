@@ -658,15 +658,15 @@ async function checkBoundariesAndCollisions() {
     //Removendo misseis inimigos que sairam da tela
     for(var i = 0; i < enemyBullets.length; i++) {
         if(enemyBullets[i].sphere.position.z > game.cameraHolder.position.z) {
-            game.scene.remove(enemyBullets[i].sphere);
+            game.scene.remove(enemyBullets[i].getGeometry());
             enemyBullets.splice(i, 1);
         }
     }
 
     //Removendo mísseis que saíram da tela
     for(var i = 0; i < bullets.length; i++) {
-        if(bullets[i].sphere.position.z < (game.cameraHolder.position.z - 250) || bullets[i].sphere.position.y < -1) {
-            game.scene.remove(bullets[i].sphere);
+        if(bullets[i].getGeometry().position.z < (game.cameraHolder.position.z - 250) || bullets[i].getGeometry().position.y < -1) {
+            game.scene.remove(bullets[i].getGeometry());
             bullets.splice(i, 1);
         }
     }
