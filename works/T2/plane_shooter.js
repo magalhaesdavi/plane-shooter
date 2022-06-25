@@ -18,6 +18,9 @@ import { Life } from './life.js';
 import { GroundAirEnemyMissile } from './bullets.js';
 
 const CAMERA_HEIGHT = 110;
+const LIGHT_HEIGHT = 130;
+const LIGHT_Z_DISTANCE = 70;
+const LIGHT_RANGE = 600;
 const AIR_ENEMIES_HEIGHT = 20;
 const SPEED = 1;
 
@@ -71,14 +74,14 @@ function spawnEnemy(type){
     }
     if(type == 'arch'){
         if(Math.random() >= 0.5){
-            var new_enemy = new archEnemy('right');
-            new_enemy.setPosition(-150, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 290);
+            let new_enemy = new archEnemy('right');
+            new_enemy.setPosition(-170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 210);
             enemies.push(new_enemy);
             game.scene.add(new_enemy.cube);
         }
         else{
-            var new_enemy = new archEnemy('left');
-            new_enemy.setPosition(150, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 290);
+            let new_enemy = new archEnemy('left');
+            new_enemy.setPosition(170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 210);
             enemies.push(new_enemy);
             game.scene.add(new_enemy.cube);
         }
@@ -102,7 +105,7 @@ function spawnEnemy(type){
         new_enemy.setPosition(
             Math.ceil(Math.random() * 80) * (Math.round(Math.random()) ? 1 : -1),
             2.5,
-            game.cameraHolder.position.z - 300
+            game.cameraHolder.position.z - 400
         );
         enemies.push(new_enemy);
         game.scene.add(new_enemy.cube);
@@ -137,7 +140,23 @@ class Game {
         this.scene = new THREE.Scene();    // Create main scene
         this.renderer = initRenderer();    // Init a basic renderer
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000); // Init camera in this position
-        this.light = initDefaultBasicLight(this.scene); // Create a basic light to illuminate the scene
+
+        this.light = new THREE.PointLight(0xedca61, 2.5, LIGHT_RANGE);
+        this.light.castShadow = true;
+
+        /*
+        this.light.shadow.mapSize.width = 128;
+        this.light.shadow.mapSize.height = 128;
+        this.light.shadow.camera.near = .1;
+        this.light.shadow.camera.far = 6;
+        this.light.shadow.camera.left = -2.5;
+        this.light.shadow.camera.right = 2.5;
+        this.light.shadow.camera.bottom = -2.5;
+        this.light.shadow.camera.top = 2.5;
+        this.light.shadow.bias = -0.0005;
+        this.light.shadow.radius = 4;
+        */
+        this.scene.add(this.light);
 
         // Creating a holder for the camera
         this.cameraHolder = new THREE.Object3D();
@@ -159,6 +178,11 @@ class Game {
         this.camera.up.set( 0, 1, 0 );
         this.cameraHolder.position.set(0, CAMERA_HEIGHT, 100);
         this.cameraHolder.rotateX(degreesToRadians(-40));
+
+        this.light.lookAt(0, 0, 0);
+        this.light.up.set( 0, 1, 0 );
+        this.light.position.set(0, LIGHT_HEIGHT, LIGHT_Z_DISTANCE);
+        this.light.rotateX(degreesToRadians(-45));
         
         this.scene.add(scenario.ground_plane);
         this.scene.add(scenario.second_ground_plane);
@@ -169,6 +193,7 @@ class Game {
 
     reset(airplane, scenario) {
         this.cameraHolder.position.set(0, CAMERA_HEIGHT, 100);
+        this.light.position.set(0, LIGHT_HEIGHT, LIGHT_Z_DISTANCE);
         
         this.scene.add(airplane.cone);
         airplane.setInitialOrResetPosition(false);
@@ -192,7 +217,6 @@ class Game {
         if(this.gameLevel == 0 && this.enemySpawnPermission){
             spawnEnemy('line');
             spawnEnemy('line');
-            spawnEnemy('ground');
             this.enemySpawnPermission = false;
             var permissionTimer1 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
             timers[0] = permissionTimer1;
@@ -547,7 +571,7 @@ async function checkBoundariesAndCollisions() {
 
     //Removendo mísseis que saíram da tela
     for(var i = 0; i < bullets.length; i++) {
-        if(bullets[i].sphere.position.z < (game.cameraHolder.position.z - 200) || bullets[i].sphere.position.y < -1) {
+        if(bullets[i].sphere.position.z < (game.cameraHolder.position.z - 250) || bullets[i].sphere.position.y < -1) {
             game.scene.remove(bullets[i].sphere);
             bullets.splice(i, 1);
         }
@@ -573,7 +597,9 @@ function render()
 
         main_scenario.update(game.cameraHolder);
         game.update();
+
         game.cameraHolder.position.z -= SPEED;
+        game.light.position.z -= SPEED;
 
         //Movimento dos inimigos
         checkBoundariesAndCollisions();
