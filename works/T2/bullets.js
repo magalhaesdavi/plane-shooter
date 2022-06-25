@@ -18,9 +18,9 @@ export class Bullet {
 
     create(airplane) {
         this.sphere.position.set(
-            airplane.cone.position.x,
-            airplane.cone.position.y,
-            airplane.cone.position.z - 5
+            airplane.getGeometry().position.x,
+            airplane.getGeometry().position.y,
+            airplane.getGeometry().position.z - 5
         );
         return;
     }
@@ -48,9 +48,9 @@ export class Bomb {
 
     create(airplane) {
         this.sphere.position.set(
-            airplane.cone.position.x,
-            airplane.cone.position.y,
-            airplane.cone.position.z - 5
+            airplane.getGeometry().position.x,
+            airplane.getGeometry().position.y,
+            airplane.getGeometry().position.z - 5
         );
         return;
     }
