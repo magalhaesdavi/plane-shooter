@@ -10,6 +10,7 @@ import {
     degreesToRadians,
 	createGroundPlaneWired
 } from "../../libs/util/util.js";
+import { SecondaryBox } from './helper.js';
 
 import { Scenario } from './scenario.js';
 import { Airplane } from './plane.js';
@@ -30,6 +31,7 @@ let enemies = [];
 let lives = [];
 let timers = [];
 
+const infoBox = new SecondaryBox("God Mode OFF");
 
 const clearGeometryArray = (array) => {
     array.forEach((element, idx) => {
@@ -300,8 +302,64 @@ controls.add("* G to turn on/off God Mode");
 controls.add("* R to reset the game");
 controls.add("* Use arrows to move the airplane");
 controls.show();
+controls.infoBox.style.display = "none";
 
 render();
+
+const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+const blocker = document.getElementById('blocker');
+const instructions = document.getElementById('instructions');
+const h1 = document.getElementById('h1');
+const p1 = document.getElementById('p1');
+const p2 = document.getElementById('p2');
+const p3 = document.getElementById('p3');
+const p4 = document.getElementById('p4');
+const p5 = document.getElementById('p5');
+const button  = document.getElementById("btn");
+const button2  = document.getElementById("btn2");
+
+const defaultInterface = () => {
+    blocker.style.display = 'block';
+    instructions.style.display = '';
+    h1.innerHTML = "Instructions";
+    p1.innerHTML = "Move: ARROWS";
+    p2.innerHTML = "Shoot: CTRL/SPACE";
+    p3.innerHTML = "God Mode: G";
+    p4.innerHTML = "Pause/Start: P";
+    p5.innerHTML = "Reset Game: R";
+    button.style.display = "";
+    button2.style.display = 'none';
+    controls.infoBox.style.display = "none";
+}
+
+const victory = () => {
+    blocker.style.display = 'block';
+    instructions.style.display = '';
+    h1.innerHTML = "CONGRATULATIONS!!!";
+    p1.innerHTML = "You did it!";
+    p2.innerHTML = "Survived and reached";
+    p3.innerHTML = "the final of the game!";
+    p4.innerHTML = "";
+    p5.innerHTML = "";
+    button.style.display = "none";
+    button2.style.display = '';
+}
+
+const defeat = () => {
+    blocker.style.display = 'block';
+    instructions.style.display = '';
+    h1.innerHTML = "DEFEAT!";
+    p1.innerHTML = "You were destroyed!";
+    p2.innerHTML = ":(";
+    p3.innerHTML = "But you can try again!";
+    p4.innerHTML = "";
+    p5.innerHTML = "";
+    button.style.display = "none";
+    button2.style.display = "";
+}
 
 function fullReset() {
     main_scenario.reset();
@@ -315,6 +373,7 @@ function fullReset() {
     airplane.life = 5;
     game.started = false;
     game.running = false;
+    game.isGodMode = false;
     game.enemySpawnPermission = true;
 
     for(var i = 0; i < timers.length; i++){
@@ -324,6 +383,27 @@ function fullReset() {
     }
     timers = [];
 }
+
+const onStartButtonPressed = () => {
+    instructions.style.display = 'none';
+    blocker.style.display = 'none';
+    if(!game.started){
+        var levelOneTimer = new Timer(advance_level, sumFirstElements(game.levelDuration, 1));
+        timers[2] = levelOneTimer;
+        var levelTwoTimer = new Timer(advance_level, sumFirstElements(game.levelDuration, 2));
+        timers[3] = levelTwoTimer;
+        var levelThreeTimer = new Timer(advance_level, sumFirstElements(game.levelDuration, 3));
+        timers[4] = levelThreeTimer;
+        var levelFourTimer = new Timer(advance_level, sumFirstElements(game.levelDuration, 4));
+        timers[5] = levelFourTimer;
+        game.started = true;
+    }
+    game.running = !game.running;
+    controls.infoBox.style.display = "";
+};
+
+button.addEventListener("click", onStartButtonPressed);
+button2.addEventListener("click", defaultInterface); 
 
 function advance_level() {
     game.gameLevel++;
@@ -341,18 +421,7 @@ function keyboardUpdate() {
     keyboard.update();
 
     if ( keyboard.down("P") ) {
-        if(!game.started){
-            var levelOneTimer = new Timer(advance_level, sumFirstElements(game.levelDuration, 1));
-            timers[2] = levelOneTimer;
-            var levelTwoTimer = new Timer(advance_level, sumFirstElements(game.levelDuration, 2));
-            timers[3] = levelTwoTimer;
-            var levelThreeTimer = new Timer(advance_level, sumFirstElements(game.levelDuration, 3));
-            timers[4] = levelThreeTimer;
-            var levelFourTimer = new Timer(advance_level, sumFirstElements(game.levelDuration, 4));
-            timers[5] = levelFourTimer;
-            game.started = true;
-        }
-        else{
+        if(game.started){
             if(!game.paused){
                 for(var i = 0; i < timers.length; i++){
                     if(timers[i] != null){
@@ -369,11 +438,14 @@ function keyboardUpdate() {
                 }
                 game.paused = false;
             }
+            game.running = !game.running;
         }
-        game.running = !game.running;
     }
     if ( keyboard.pressed("R") ) {
         fullReset();
+        blocker.style.display = 'block';
+        instructions.style.display = '';
+        controls.infoBox.style.display = "none";
     }
 
     // Airplane controls
@@ -409,10 +481,6 @@ function keyboardUpdate() {
             bullets.push(bullet);
         }
     }
-}
-
-const sleep = (ms) => {
-    return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 //Checa se os objetos saíram da tela ou colidiram
@@ -468,20 +536,29 @@ async function checkBoundariesAndCollisions() {
             if(crash) {
                 let endTime = new Date();
                 if(endTime - airplane.damageTime >= 100) {
+                    let temp_cube = enemies[i].cube
+                    enemies.splice(i, 1);
                     airplane.damageTime = new Date();
                     // Aviao toma dano
                     if (airplane.life > 2) {
                         //Animacao de dano
-                        gsap.to(airplane.cone.scale, {x:0.4, y: 0.4, z: 0.4, duration: 0.1});
-                        await sleep(100)
+                        gsap.to(airplane.cone.scale, {x:0.3, y: 0.3, z: 0.3, duration: 0.05});
+                        gsap.to(temp_cube.scale, {x:0, y: 0, z: 0, duration: 0.05});
+                        await sleep(100);
+                        game.scene.remove(temp_cube);
+                        i--;
                         gsap.to(airplane.cone.scale, {x:1, y: 1, z: 1, duration: 0.1});
                         airplane.decreaseLife(2);
                     }
                     else { // Aviao morre
                         //Animação de colisão
                         gsap.to(airplane.cone.scale, {x:0, y: 0, z: 0, duration: 0.25});
-                        await sleep(500);
+                        gsap.to(temp_cube.scale, {x:0, y: 0, z: 0, duration: 0.25});
+                        await sleep(550);
+                        game.scene.remove(temp_cube);
+                        i--;
                         fullReset();
+                        defeat();
                     }
                 }
             }
@@ -540,7 +617,7 @@ async function checkBoundariesAndCollisions() {
                     // Aviao toma dano
                     if (airplane.life > 1) {
                         //Animacao de dano
-                        gsap.to(airplane.cone.scale, { x:0.4, y: 0.4, z: 0.4, duration: 0.1 });
+                        gsap.to(airplane.cone.scale, { x:0.3, y: 0.3, z: 0.3, duration: 0.1 });
                         await sleep(100)
                         gsap.to(airplane.cone.scale, { x:1, y: 1, z: 1, duration: 0.1 });
 
@@ -552,8 +629,9 @@ async function checkBoundariesAndCollisions() {
                     else { // Aviao morre
                         //Animação de colisão
                         gsap.to(airplane.cone.scale, { x:0, y: 0, z: 0, duration: 0.25 });
-                        await sleep(500);
+                        await sleep(300);
                         fullReset();
+                        defeat();
                     }
                     j--;
                 }
@@ -603,6 +681,12 @@ function render()
 
         //Movimento dos inimigos
         checkBoundariesAndCollisions();
+    }
+    if (game.isGodMode) {
+        infoBox.changeMessage("God Mode ON");  
+    }
+    else {
+        infoBox.changeMessage("God Mode OFF");
     }
     requestAnimationFrame(render);
     game.renderer.render(game.scene, game.camera) // Render scene
