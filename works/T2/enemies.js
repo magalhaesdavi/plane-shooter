@@ -89,6 +89,9 @@ export class archEnemy {
         this.cube = new THREE.Mesh( this.geometry, this.material );
         this.cube.castShadow = true;
         this.cube.receiveShadow = true;
+
+        this.cube.rotateY(degreesToRadians(45 * (this.direction === 'left' ? -1 : 1)));
+
         this.direction = direction;
         this.boundingBox = new THREE.Box3().setFromObject(this.cube);
         this.shootPermission = false;
@@ -113,23 +116,6 @@ export class archEnemy {
             this.startTime = new Date();
         }
         
-        this.cube.rotateY(degreesToRadians(1.25));
-        this.cube.translateZ(1 + 1.85*(this.cube.rotation.y));
-
-        // this.cube.translateZ( ( Math.sin(-1 * this.t) + 1));
-        // this.cube.translateX( ( Math.cos(this.t) + 1));
-        // this.t = (this.t + 0.07) % 360;
-
-        // this.cube.position.x += Math.sin(this.speed * Math.PI * 2) * 50;
-        // this.cube.position.z += Math.sin(this.speed * Math.PI * 2) * 50;
-        // this.speed += 0.01
-
-        // this.cube.rotateY(degreesToRadians(1));
-
-        // this.t += 0.1; 
-        // this.cube.rotation.y += 0.005;
-        // this.cube.position.x = 20*Math.cos(this.t) + 0;
-        // this.cube.position.z = 20*Math.sin(this.t) + 0;
         this.cube.rotateY(degreesToRadians(1 * (this.direction === 'left' ? -1 : 1)));
         this.cube.translateZ((this.cube.rotation.y + 3.5)*0.85);
 
