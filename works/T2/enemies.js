@@ -17,6 +17,9 @@ export class lineEnemy {
         this.geometry = new THREE.BoxGeometry( 5, 5, 5 );
         this.material = new THREE.MeshLambertMaterial({color: 0xFF0000});
         this.cube = new THREE.Mesh( this.geometry, this.material );
+        this.cube.castShadow = true;
+        this.cube.receiveShadow = true;
+
         this.speed = speed;
         this.boundingBox = new THREE.Box3().setFromObject(this.cube);
         this.shootPermission = false;
@@ -80,11 +83,13 @@ export class lineEnemy {
 }
 
 export class archEnemy {
-    constructor(speed) {
+    constructor(direction='left') {
         this.geometry = new THREE.BoxGeometry( 5, 5, 5 );
         this.material = new THREE.MeshLambertMaterial({color: 0xFF0000});
         this.cube = new THREE.Mesh( this.geometry, this.material );
-        this.speed = speed;
+        this.cube.castShadow = true;
+        this.cube.receiveShadow = true;
+        this.direction = direction;
         this.boundingBox = new THREE.Box3().setFromObject(this.cube);
         this.shootPermission = false;
         this.startTime = new Date();
@@ -125,6 +130,8 @@ export class archEnemy {
         // this.cube.rotation.y += 0.005;
         // this.cube.position.x = 20*Math.cos(this.t) + 0;
         // this.cube.position.z = 20*Math.sin(this.t) + 0;
+        this.cube.rotateY(degreesToRadians(1 * (this.direction === 'left' ? -1 : 1)));
+        this.cube.translateZ((this.cube.rotation.y + 3.5)*0.85);
 
         this.boundingBox.copy(this.cube.geometry.boundingBox).applyMatrix4(this.cube.matrixWorld);
     }
@@ -172,6 +179,9 @@ export class diagonalEnemy {
         this.geometry = new THREE.BoxGeometry( 5, 5, 5 );
         this.material = new THREE.MeshLambertMaterial({color: 0xFF0000});
         this.cube = new THREE.Mesh( this.geometry, this.material );
+        this.cube.castShadow = true;
+        this.cube.receiveShadow = true;
+
         this.speed = speed;
         this.boundingBox = new THREE.Box3().setFromObject(this.cube);
         this.shootPermission = false;
@@ -242,6 +252,9 @@ export class GroundEnemy {
         this.geometry = new THREE.BoxGeometry( 10, 5, 10 );
         this.material = new THREE.MeshLambertMaterial({ color: 0x8c6d1f });
         this.cube = new THREE.Mesh( this.geometry, this.material );
+        this.cube.castShadow = true;
+        this.cube.receiveShadow = true;
+
         this.speed = speed;
         this.boundingBox = new THREE.Box3().setFromObject(this.cube);
         this.shootPermission = false;
