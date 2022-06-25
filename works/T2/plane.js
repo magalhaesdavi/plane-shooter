@@ -15,6 +15,9 @@ export class Airplane {
         this.geometry = new THREE.ConeGeometry( 2, 3, 32 );
         this.material = new THREE.MeshLambertMaterial({color: 0xFFFFFF});
         this.cone = new THREE.Mesh( this.geometry, this.material );
+        this.cone.castShadow = true;
+        this.cone.receiveShadow = true;
+
         this.boundingBox = new THREE.Box3().setFromObject(this.cone);
         this.shootPermission = false;
         this.startTime = new Date();
