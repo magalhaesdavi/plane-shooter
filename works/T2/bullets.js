@@ -82,9 +82,9 @@ export class EnemyBullet {
 
     create(enemy) {
         this.sphere.position.set(
-            enemy.cube.position.x,
-            enemy.cube.position.y,
-            enemy.cube.position.z + 5
+            enemy.getGeometry().position.x,
+            enemy.getGeometry().position.y,
+            enemy.getGeometry().position.z + 5
         );
         return;
     }
@@ -121,9 +121,9 @@ export class GroundAirEnemyMissile {
 
     create(enemy) {
         this.sphere.position.set(
-            enemy.cube.position.x,
-            enemy.cube.position.y,
-            enemy.cube.position.z + 5
+            enemy.getGeometry().position.x,
+            enemy.getGeometry().position.y,
+            enemy.getGeometry().position.z + 5
         );
         return;
     }

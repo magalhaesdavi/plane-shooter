@@ -13,7 +13,7 @@ const AIRPLANE_BULLET_COLOR = 0x2be3c1;
 export class Airplane {
     constructor(model) {
         this.geometry = new THREE.ConeGeometry( 2, 3, 32 );
-        this.material = new THREE.MeshLambertMaterial({ transparent : true, opacity: 0});
+        this.material = new THREE.MeshLambertMaterial({ transparent : true, opacity: 0 });
         this.material.depthWrite = false;
         this.object = new THREE.Mesh( this.geometry, this.material );
 

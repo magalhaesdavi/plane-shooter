@@ -13,15 +13,13 @@ function degreesToRadians(degrees)
     funcionalidades de um inimigo'.
 */}
 export class lineEnemy {
-    constructor(speed) {
+    constructor(speed, model) {
         this.geometry = new THREE.BoxGeometry( 5, 5, 5 );
-        this.material = new THREE.MeshLambertMaterial({color: 0xFF0000});
-        this.cube = new THREE.Mesh( this.geometry, this.material );
-        this.cube.castShadow = true;
-        this.cube.receiveShadow = true;
+        this.material = new THREE.MeshLambertMaterial({ color: 0xFF0000, transparent: true, opacity: 1 });
+        this.object = new THREE.Mesh( this.geometry, this.material );
 
         this.speed = speed;
-        this.boundingBox = new THREE.Box3().setFromObject(this.cube);
+        this.boundingBox = new THREE.Box3().setFromObject(this.object);
         this.shootPermission = false;
         this.startTime = new Date();
         return;
@@ -29,7 +27,7 @@ export class lineEnemy {
 
     //Define posicao do cubo
     setPosition(x, y, z) {
-        this.cube.position.set(x, y, z)
+        this.object.position.set(x, y, z)
         return;
     }
 
@@ -40,12 +38,12 @@ export class lineEnemy {
             this.shootPermission = true;
             this.startTime = new Date();
         }
-        this.cube.translateZ(this.speed);
-        this.boundingBox.copy(this.cube.geometry.boundingBox).applyMatrix4(this.cube.matrixWorld);
+        this.object.translateZ(this.speed);
+        this.boundingBox.copy(this.object.geometry.boundingBox).applyMatrix4(this.object.matrixWorld);
     }
 
     shoot(speed, airplane) {
-        if(this.shootPermission && this.cube.position.z <= airplane.getPosition().z){
+        if(this.shootPermission && this.object.position.z <= airplane.getPosition().z){
             let bullet = new EnemyBullet(speed);
             bullet.create(this);
             bullet.sphere.lookAt(airplane.getGeometry().position);
@@ -78,7 +76,7 @@ export class lineEnemy {
     }
 
     getGeometry() {
-        return this.cube;
+        return this.object;
     }
 }
 
@@ -86,24 +84,24 @@ export class archEnemy {
     constructor(direction='left') {
         this.geometry = new THREE.BoxGeometry( 5, 5, 5 );
         this.material = new THREE.MeshLambertMaterial({color: 0xFF0000});
-        this.cube = new THREE.Mesh( this.geometry, this.material );
-        this.cube.castShadow = true;
-        this.cube.receiveShadow = true;
+        this.object = new THREE.Mesh( this.geometry, this.material );
+        this.object.castShadow = true;
+        this.object.receiveShadow = true;
 
-        this.cube.rotateY(degreesToRadians(45 * (this.direction === 'left' ? -1 : 1)));
+        this.object.rotateY(degreesToRadians(45 * (this.direction === 'left' ? -1 : 1)));
 
         this.direction = direction;
-        this.boundingBox = new THREE.Box3().setFromObject(this.cube);
+        this.boundingBox = new THREE.Box3().setFromObject(this.object);
         this.shootPermission = false;
         this.startTime = new Date();
         this.t = 0;
-        // this.cube.geometry.computeBoundingBox();
+        // this.object.geometry.computeBoundingBox();
         return;
     }
 
     //Define posicao do cubo
     setPosition(x, y, z) {
-        this.cube.position.set(x, y, z)
+        this.object.position.set(x, y, z)
         return;
     }
 
@@ -116,14 +114,14 @@ export class archEnemy {
             this.startTime = new Date();
         }
         
-        this.cube.rotateY(degreesToRadians(1 * (this.direction === 'left' ? -1 : 1)));
-        this.cube.translateZ((this.cube.rotation.y + 3.5)*0.85);
+        this.object.rotateY(degreesToRadians(1 * (this.direction === 'left' ? -1 : 1)));
+        this.object.translateZ((this.object.rotation.y + 3.5)*0.85);
 
-        this.boundingBox.copy(this.cube.geometry.boundingBox).applyMatrix4(this.cube.matrixWorld);
+        this.boundingBox.copy(this.object.geometry.boundingBox).applyMatrix4(this.object.matrixWorld);
     }
 
     shoot(speed, airplane) {
-        if(this.shootPermission && this.cube.position.z <= airplane.getPosition().z){
+        if(this.shootPermission && this.object.position.z <= airplane.getPosition().z){
             let bullet = new EnemyBullet(speed);
             bullet.create(this);
             bullet.sphere.lookAt(airplane.getGeometry().position);
@@ -156,7 +154,7 @@ export class archEnemy {
     }
 
     getGeometry() {
-        return this.cube;
+        return this.object;
     }
 }
 
@@ -164,21 +162,21 @@ export class diagonalEnemy {
     constructor(speed) {
         this.geometry = new THREE.BoxGeometry( 5, 5, 5 );
         this.material = new THREE.MeshLambertMaterial({color: 0xFF0000});
-        this.cube = new THREE.Mesh( this.geometry, this.material );
-        this.cube.castShadow = true;
-        this.cube.receiveShadow = true;
+        this.object = new THREE.Mesh( this.geometry, this.material );
+        this.object.castShadow = true;
+        this.object.receiveShadow = true;
 
         this.speed = speed;
-        this.boundingBox = new THREE.Box3().setFromObject(this.cube);
+        this.boundingBox = new THREE.Box3().setFromObject(this.object);
         this.shootPermission = false;
         this.startTime = new Date();
-        // this.cube.geometry.computeBoundingBox();
+        // this.object.geometry.computeBoundingBox();
         return;
     }
 
     //Define posicao do cubo
     setPosition(x, y, z) {
-        this.cube.position.set(x, y, z)
+        this.object.position.set(x, y, z)
         return;
     }
 
@@ -189,13 +187,13 @@ export class diagonalEnemy {
             this.shootPermission = true;
             this.startTime = new Date();
         }
-        this.cube.translateZ(this.speed);
-        this.cube.translateX(this.speed);
-        this.boundingBox.copy(this.cube.geometry.boundingBox).applyMatrix4(this.cube.matrixWorld);
+        this.object.translateZ(this.speed);
+        this.object.translateX(this.speed);
+        this.boundingBox.copy(this.object.geometry.boundingBox).applyMatrix4(this.object.matrixWorld);
     }
 
     shoot(speed, airplane) {
-        if(this.shootPermission && this.cube.position.z <= airplane.getPosition().z){
+        if(this.shootPermission && this.object.position.z <= airplane.getPosition().z){
             let bullet = new EnemyBullet(speed);
             bullet.create(this);
             bullet.sphere.lookAt(airplane.getGeometry().position);
@@ -228,7 +226,7 @@ export class diagonalEnemy {
     }
 
     getGeometry() {
-        return this.cube;
+        return this.object;
     }
 }
 
@@ -237,12 +235,12 @@ export class GroundEnemy {
     constructor(speed) {
         this.geometry = new THREE.BoxGeometry( 10, 5, 10 );
         this.material = new THREE.MeshLambertMaterial({ color: 0x8c6d1f });
-        this.cube = new THREE.Mesh( this.geometry, this.material );
-        this.cube.castShadow = true;
-        this.cube.receiveShadow = true;
+        this.object = new THREE.Mesh( this.geometry, this.material );
+        this.object.castShadow = true;
+        this.object.receiveShadow = true;
 
         this.speed = speed;
-        this.boundingBox = new THREE.Box3().setFromObject(this.cube);
+        this.boundingBox = new THREE.Box3().setFromObject(this.object);
         this.shootPermission = false;
         this.startTime = new Date();
         return;
@@ -250,7 +248,7 @@ export class GroundEnemy {
 
     //Define posicao do cubo
     setPosition(x, y, z) {
-        this.cube.position.set(x, y, z)
+        this.object.position.set(x, y, z)
         return;
     }
 
@@ -261,12 +259,12 @@ export class GroundEnemy {
             this.shootPermission = true;
             this.startTime = new Date();
         }
-        this.cube.translateZ(this.speed);
-        this.boundingBox.copy(this.cube.geometry.boundingBox).applyMatrix4(this.cube.matrixWorld);
+        this.object.translateZ(this.speed);
+        this.boundingBox.copy(this.object.geometry.boundingBox).applyMatrix4(this.object.matrixWorld);
     }
 
     shoot(speed, airplane) {
-        if(this.shootPermission && this.cube.position.z <= airplane.getPosition().z){
+        if(this.shootPermission && this.object.position.z <= airplane.getPosition().z){
             let bullet = new GroundAirEnemyMissile(speed);
             bullet.create(this);
             this.shootPermission = false;
@@ -298,6 +296,6 @@ export class GroundEnemy {
     }
 
     getGeometry() {
-        return this.cube;
+        return this.object;
     }
 }

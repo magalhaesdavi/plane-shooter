@@ -72,20 +72,20 @@ function spawnEnemy(type){
         new_enemy.setPosition(Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1), AIR_ENEMIES_HEIGHT,
                                 game.cameraHolder.position.z - 300);
         enemies.push(new_enemy);
-        game.scene.add(new_enemy.cube);
+        game.scene.add(new_enemy.getGeometry());
     }
     if(type == 'arch'){
         if(Math.random() >= 0.5){
             let new_enemy = new archEnemy('right');
             new_enemy.setPosition(-170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 210);
             enemies.push(new_enemy);
-            game.scene.add(new_enemy.cube);
+            game.scene.add(new_enemy.getGeometry());
         }
         else{
             let new_enemy = new archEnemy('left');
             new_enemy.setPosition(170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 210);
             enemies.push(new_enemy);
-            game.scene.add(new_enemy.cube);
+            game.scene.add(new_enemy.getGeometry());
         }
     }
     if(type == 'diag'){
@@ -93,13 +93,13 @@ function spawnEnemy(type){
             var new_enemy = new diagonalEnemy(1, 'right');
             new_enemy.setPosition(-70, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 270);
             enemies.push(new_enemy);
-            game.scene.add(new_enemy.cube);
+            game.scene.add(new_enemy.getGeometry());
         }
         else{
             var new_enemy = new diagonalEnemy(1, 'left');
             new_enemy.setPosition(70, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 300);
             enemies.push(new_enemy);
-            game.scene.add(new_enemy.cube);
+            game.scene.add(new_enemy.getGeometry());
         }
     }
     if (type == 'ground') {
@@ -110,7 +110,7 @@ function spawnEnemy(type){
             game.cameraHolder.position.z - 400
         );
         enemies.push(new_enemy);
-        game.scene.add(new_enemy.cube);
+        game.scene.add(new_enemy.getGeometry());
     }
 }
 
@@ -447,9 +447,9 @@ async function checkBoundariesAndCollisions() {
         }
         
         //Removendo inimigos que saíram da tela
-        if(enemies[i].cube.position.z > game.cameraHolder.position.z - 40 || enemies[i].cube.position.x > 151 || 
-            enemies[i].cube.position.x < -200) {
-            game.scene.remove(enemies[i].cube);
+        if(enemies[i].getGeometry().position.z > game.cameraHolder.position.z - 40 || enemies[i].getGeometry().position.x > 151 || 
+            enemies[i].getGeometry().position.x < -200) {
+            game.scene.remove(enemies[i].getGeometry());
             enemies.splice(i, 1);
             i--;
             if(i >= enemies.length || i < 0) {
@@ -463,7 +463,7 @@ async function checkBoundariesAndCollisions() {
             game.scene.remove(bullets[shot].sphere);
             bullets.splice(shot, 1);
             
-            let temp_cube = enemies[i].cube
+            let temp_cube = enemies[i].getGeometry()
             enemies.splice(i, 1);
 
             //Animação de colisão
