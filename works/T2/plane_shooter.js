@@ -337,6 +337,60 @@ const p5 = document.getElementById('p5');
 const button  = document.getElementById("btn");
 const button2  = document.getElementById("btn2");
 
+const painel = document.getElementById("painel");
+const vidas = document.getElementById("vidas");
+painel.style.display = 'none';
+vidas.style.display = 'none';
+const vida1 = document.getElementById("vida1");
+const vida2 = document.getElementById("vida2");
+const vida3 = document.getElementById("vida3");
+const vida4 = document.getElementById("vida4");
+const vida5 = document.getElementById("vida5");
+
+const updateLives = () => {
+    if (airplane.life == 5) {
+        vida1.style.display = '';
+        vida2.style.display = '';
+        vida3.style.display = '';
+        vida4.style.display = '';
+        vida5.style.display = '';
+    }
+    else{
+        if (airplane.life == 4) {
+            vida1.style.display = '';
+            vida2.style.display = '';
+            vida3.style.display = '';
+            vida4.style.display = '';
+            vida5.style.display = 'none';
+        }
+        else {
+            if (airplane.life == 3) {
+                vida1.style.display = '';
+                vida2.style.display = '';
+                vida3.style.display = '';
+                vida4.style.display = 'none';
+                vida5.style.display = 'none';
+            }
+            else {
+                if (airplane.life == 2) {
+                    vida1.style.display = '';
+                    vida2.style.display = '';
+                    vida3.style.display = 'none';
+                    vida4.style.display = 'none';
+                    vida5.style.display = 'none';
+                }
+                else {
+                    vida1.style.display = '';
+                    vida2.style.display = 'none';
+                    vida3.style.display = 'none';
+                    vida4.style.display = 'none';
+                    vida5.style.display = 'none';
+                }
+            }
+        }
+    }
+};
+
 const defaultInterface = () => {
     blocker.style.display = 'block';
     instructions.style.display = '';
@@ -349,6 +403,9 @@ const defaultInterface = () => {
     button.style.display = "";
     button2.style.display = 'none';
     controls.infoBox.style.display = "none";
+    painel.style.display = 'none';
+    vidas.style.display = 'none';
+    updateLives();
 }
 
 const victory = () => {
@@ -362,6 +419,8 @@ const victory = () => {
     p5.innerHTML = "";
     button.style.display = "none";
     button2.style.display = '';
+    painel.style.display = 'none';
+    vidas.style.display = 'none';
 }
 
 const defeat = () => {
@@ -375,6 +434,8 @@ const defeat = () => {
     p5.innerHTML = "";
     button.style.display = "none";
     button2.style.display = "";
+    painel.style.display = 'none';
+    vidas.style.display = 'none';
 }
 
 function fullReset() {
@@ -416,6 +477,8 @@ const onStartButtonPressed = () => {
     }
     game.running = !game.running;
     controls.infoBox.style.display = "";
+    painel.style.display = '';
+    vidas.style.display = '';
 };
 
 button.addEventListener("click", onStartButtonPressed);
@@ -462,6 +525,9 @@ function keyboardUpdate() {
         blocker.style.display = 'block';
         instructions.style.display = '';
         controls.infoBox.style.display = "none";
+        painel.style.display = 'none';
+        vidas.style.display = 'none';
+        updateLives();
     }
 
     // Airplane controls
@@ -565,6 +631,7 @@ async function checkBoundariesAndCollisions() {
                         i--;
                         gsap.to(airplane.getGeometry().scale, {x:1, y: 1, z: 1, duration: 0.1});
                         airplane.decreaseLife(2);
+                        updateLives();
                     }
                     else { // Aviao morre
                         //Animação de colisão
@@ -574,6 +641,7 @@ async function checkBoundariesAndCollisions() {
                         game.scene.remove(temp_cube);
                         i--;
                         fullReset();
+                        await sleep(400);
                         defeat();
                     }
                 }
@@ -609,6 +677,7 @@ async function checkBoundariesAndCollisions() {
             //Animacao de colisao
             gsap.to(temp_life.scale, {x:0, y: 0, z: 0, duration: 0.25});
             airplane.increaseLife();
+            updateLives();
             await sleep(250);
             game.scene.remove(temp_life);
             i--;
@@ -641,12 +710,15 @@ async function checkBoundariesAndCollisions() {
                             airplane.decreaseLife(2);
                         else
                             airplane.decreaseLife(1);
+
+                        updateLives();
                     }
                     else { // Aviao morre
                         //Animação de colisão
                         gsap.to(airplane.getGeometry().scale, { x:0, y: 0, z: 0, duration: 0.25 });
                         await sleep(300);
                         fullReset();
+                        await sleep(400);
                         defeat();
                     }
                     j--;
