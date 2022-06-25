@@ -530,7 +530,7 @@ async function checkBoundariesAndCollisions() {
             game.scene.remove(bullets[shot].sphere);
             bullets.splice(shot, 1);
             
-            let temp_cube = enemies[i].getGeometry()
+            let temp_cube = enemies[i].getGeometry();
             enemies.splice(i, 1);
 
             //Animação de colisão
@@ -552,7 +552,7 @@ async function checkBoundariesAndCollisions() {
             if(crash) {
                 let endTime = new Date();
                 if(endTime - airplane.damageTime >= 100) {
-                    let temp_cube = enemies[i].cube
+                    let temp_cube = enemies[i].getGeometry();
                     enemies.splice(i, 1);
                     airplane.damageTime = new Date();
                     // Aviao toma dano
@@ -627,7 +627,7 @@ async function checkBoundariesAndCollisions() {
                 let endTime = new Date();
 
                 if(endTime - airplane.damageTime >= 100) {
-                    game.scene.remove(enemyBullets[j].sphere);
+                    game.scene.remove(enemyBullets[j].getGeometry());
                     enemyBullets.splice(j, 1);
                     airplane.damageTime = new Date();
                     // Aviao toma dano
