@@ -42,7 +42,7 @@ export class Bomb {
         this.sphere = new THREE.Mesh( this.geometry, this.material );
         this.speed = speed * 2.25;
         this.boundingBox = new THREE.Box3().setFromObject(this.sphere);
-        this.turnAngle = 1.35;
+        this.turnAngle = 0.5;
         return;
     }
 

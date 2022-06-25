@@ -3,7 +3,7 @@ import { degreesToRadians } from '../../libs/util/util.js';
 import { Bomb, Bullet } from './bullets.js';
 
 const AIRPLANE_HEIGHT = 20;
-const AIRPLANE_CADENCY = 500;
+const AIRPLANE_CADENCY = 250;
 const AIRPLANE_BULLET_COLOR = 0x2be3c1;
 
 {/**
