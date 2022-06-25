@@ -11,14 +11,26 @@ const AIRPLANE_BULLET_COLOR = 0x2be3c1;
     funcionalidades do avião.
 */}
 export class Airplane {
-    constructor() {
+    constructor(model) {
         this.geometry = new THREE.ConeGeometry( 2, 3, 32 );
-        this.material = new THREE.MeshLambertMaterial({color: 0xFFFFFF});
-        this.cone = new THREE.Mesh( this.geometry, this.material );
-        this.cone.castShadow = true;
-        this.cone.receiveShadow = true;
+        this.material = new THREE.MeshLambertMaterial({ transparent : true, opacity: 0});
+        this.material.depthWrite = false;
+        this.object = new THREE.Mesh( this.geometry, this.material );
 
-        this.boundingBox = new THREE.Box3().setFromObject(this.cone);
+        if (!model) {
+            this.model = null;
+            this.object.castShadow = true;
+            this.object.receiveShadow = true;
+        }
+        else {
+            this.model = model;
+            this.model.rotateY(degreesToRadians(180));
+            this.model.rotateX(degreesToRadians(-90));
+            this.model.scale.set(1.5,1.5,1.5);
+            this.object.add(this.model);
+        }
+
+        this.boundingBox = new THREE.Box3().setFromObject(this.object);
         this.shootPermission = false;
         this.startTime = new Date();
         this.life = 5;
@@ -38,14 +50,14 @@ export class Airplane {
             this.bombPermission = true;
             this.bombStartTime = new Date();
         }
-        this.cone.translateY(speed);
-        this.boundingBox.copy(this.cone.geometry.boundingBox).applyMatrix4(this.cone.matrixWorld);
+        this.object.translateY(speed);
+        this.boundingBox.copy(this.object.geometry.boundingBox).applyMatrix4(this.object.matrixWorld);
     }
 
     setInitialOrResetPosition(initial = true) {
-        this.cone.position.set(0, AIRPLANE_HEIGHT, 50);
+        this.object.position.set(0, AIRPLANE_HEIGHT, 50);
         if (initial) {
-            this.cone.rotateX(degreesToRadians(-90));
+            this.object.rotateX(degreesToRadians(-90));
         }
     }
 
@@ -95,10 +107,10 @@ export class Airplane {
     }
 
     getGeometry() {
-        return this.cone;
+        return this.object;
     }
 
     getPosition() {
-        return this.cone.position;
+        return this.object.position;
     }
 }
