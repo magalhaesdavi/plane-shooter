@@ -11,7 +11,6 @@ import {
 	createGroundPlaneWired
 } from "../../libs/util/util.js";
 import { GLTFLoader } from '../../build/jsm/loaders/GLTFLoader.js';
-import { OBJLoader } from '../../build/jsm/loaders/OBJLoader.js';
 
 import { Scenario } from './scenario.js';
 import { Airplane } from './plane.js';
@@ -66,44 +65,48 @@ var Timer = function(callback, delay) {
     this.resume();
 };
 
-function spawnEnemy(type){
+async function spawnEnemy(type){
     if(type == 'line'){
-        var new_enemy = new lineEnemy(1);
+        let lineEnemyModel = await game.loadModel('./assets/fighter6.glb');
+        var new_enemy = new lineEnemy(1, lineEnemyModel);
         new_enemy.setPosition(Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1), AIR_ENEMIES_HEIGHT,
                                 game.cameraHolder.position.z - 300);
         enemies.push(new_enemy);
         game.scene.add(new_enemy.getGeometry());
     }
     if(type == 'arch'){
+        let archEnemyModel = await game.loadModel('./assets/fighter1.glb');
         if(Math.random() >= 0.5){
-            let new_enemy = new archEnemy('right');
+            let new_enemy = new archEnemy('right', archEnemyModel);
             new_enemy.setPosition(-170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 210);
             enemies.push(new_enemy);
             game.scene.add(new_enemy.getGeometry());
         }
         else{
-            let new_enemy = new archEnemy('left');
+            let new_enemy = new archEnemy('left', archEnemyModel);
             new_enemy.setPosition(170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 210);
             enemies.push(new_enemy);
             game.scene.add(new_enemy.getGeometry());
         }
     }
     if(type == 'diag'){
+        let diagonalEnemyModel = await game.loadModel('./assets/fighter5.glb');
         if(Math.random() >= 0.5){
-            var new_enemy = new diagonalEnemy(1, 'right');
-            new_enemy.setPosition(-70, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 270);
+            var new_enemy = new diagonalEnemy('left', 1, diagonalEnemyModel);
+            new_enemy.setPosition(-140, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 250);
             enemies.push(new_enemy);
             game.scene.add(new_enemy.getGeometry());
         }
         else{
-            var new_enemy = new diagonalEnemy(1, 'left');
-            new_enemy.setPosition(70, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 300);
+            var new_enemy = new diagonalEnemy('right', 1, diagonalEnemyModel);
+            new_enemy.setPosition(140, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 250);
             enemies.push(new_enemy);
             game.scene.add(new_enemy.getGeometry());
         }
     }
     if (type == 'ground') {
-        let new_enemy = new GroundEnemy(0);
+        let groundEnemyModel = await game.loadModel('./assets/fighter3.glb');
+        let new_enemy = new GroundEnemy(0, groundEnemyModel);
         new_enemy.setPosition(
             Math.ceil(Math.random() * 80) * (Math.round(Math.random()) ? 1 : -1),
             2.5,
@@ -289,10 +292,6 @@ window.addEventListener(
     function(){ onWindowResize(game.camera, game.renderer) },
     false 
 );
-
-// Show axes (parameter is size of each axis)
-//let axesHelper = new THREE.AxesHelper( 12 );
-//game.scene.add( axesHelper );
 
 // To use the keyboard
 let keyboard = new KeyboardState();

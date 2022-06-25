@@ -15,8 +15,25 @@ function degreesToRadians(degrees)
 export class lineEnemy {
     constructor(speed, model) {
         this.geometry = new THREE.BoxGeometry( 5, 5, 5 );
-        this.material = new THREE.MeshLambertMaterial({ color: 0xFF0000, transparent: true, opacity: 1 });
+        this.material = new THREE.MeshLambertMaterial({
+            color: 0x62bf06,
+            transparent: model ? true : false,
+            opacity: 0
+        });
         this.object = new THREE.Mesh( this.geometry, this.material );
+
+        if (!model) {
+            this.model = null;
+            this.object.castShadow = true;
+            this.object.receiveShadow = true;
+        }
+        else {
+            this.model = model;
+            this.model.scale.set(0.5, 0.5, 0.5);
+            this.model.rotateY(degreesToRadians(-90));
+            
+            this.object.add(this.model);
+        }
 
         this.speed = speed;
         this.boundingBox = new THREE.Box3().setFromObject(this.object);
@@ -81,12 +98,25 @@ export class lineEnemy {
 }
 
 export class archEnemy {
-    constructor(direction='left') {
+    constructor(direction='left', model) {
         this.geometry = new THREE.BoxGeometry( 5, 5, 5 );
-        this.material = new THREE.MeshLambertMaterial({color: 0xFF0000});
+        this.material = new THREE.MeshLambertMaterial({
+            color: 0xFF0000,
+            transparent: model ? true : false,
+            opacity: 0
+        });
         this.object = new THREE.Mesh( this.geometry, this.material );
-        this.object.castShadow = true;
-        this.object.receiveShadow = true;
+
+        if (!model) {
+            this.model = null;
+            this.object.castShadow = true;
+            this.object.receiveShadow = true;
+        }
+        else {
+            this.model = model;
+            this.model.scale.set(1.5, 1.5, 1.5);
+            this.object.add(this.model);
+        }
 
         this.object.rotateY(degreesToRadians(45 * (this.direction === 'left' ? -1 : 1)));
 
@@ -159,12 +189,29 @@ export class archEnemy {
 }
 
 export class diagonalEnemy {
-    constructor(speed) {
+    constructor(direction, speed, model) {
+        this.direction = direction;
         this.geometry = new THREE.BoxGeometry( 5, 5, 5 );
-        this.material = new THREE.MeshLambertMaterial({color: 0xFF0000});
+        this.material = new THREE.MeshLambertMaterial({
+            color: 0xFF0000,
+            transparent: model ? true : false,
+            opacity: 0
+        });
         this.object = new THREE.Mesh( this.geometry, this.material );
-        this.object.castShadow = true;
-        this.object.receiveShadow = true;
+
+        if (!model) {
+            this.model = null;
+            this.object.castShadow = true;
+            this.object.receiveShadow = true;
+        }
+        else {
+            this.model = model;
+            this.model.scale.set(1, 0.85, 1);
+            this.model.rotateX(degreesToRadians(90));
+            this.object.add(this.model);
+            this.model.rotateZ(degreesToRadians(45 * (this.direction == 'left' ? -1 : 1) ));
+        }
+
 
         this.speed = speed;
         this.boundingBox = new THREE.Box3().setFromObject(this.object);
@@ -188,7 +235,7 @@ export class diagonalEnemy {
             this.startTime = new Date();
         }
         this.object.translateZ(this.speed);
-        this.object.translateX(this.speed);
+        this.object.translateX(this.speed*2 * (this.direction == 'left' ? 1 : -1));
         this.boundingBox.copy(this.object.geometry.boundingBox).applyMatrix4(this.object.matrixWorld);
     }
 
@@ -232,12 +279,26 @@ export class diagonalEnemy {
 
 
 export class GroundEnemy {
-    constructor(speed) {
+    constructor(speed, model) {
         this.geometry = new THREE.BoxGeometry( 10, 5, 10 );
-        this.material = new THREE.MeshLambertMaterial({ color: 0x8c6d1f });
+        this.material = new THREE.MeshLambertMaterial({
+            color: 0x8c6d1f,
+            transparent: model ? true : false,
+            opacity: 0
+        });
         this.object = new THREE.Mesh( this.geometry, this.material );
-        this.object.castShadow = true;
-        this.object.receiveShadow = true;
+
+        if (!model) {
+            this.model = null;
+            this.object.castShadow = true;
+            this.object.receiveShadow = true;
+        }
+        else {
+            this.model = model;
+            this.model.scale.set(6, 6, 6);
+            this.model.rotateY(degreesToRadians(-90));
+            this.object.add(this.model);
+        }
 
         this.speed = speed;
         this.boundingBox = new THREE.Box3().setFromObject(this.object);
