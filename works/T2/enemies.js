@@ -48,7 +48,7 @@ export class lineEnemy {
         if(this.shootPermission && this.cube.position.z <= airplane.getPosition().z){
             let bullet = new EnemyBullet(speed);
             bullet.create(this);
-            bullet.sphere.lookAt(airplane.cone.position);
+            bullet.sphere.lookAt(airplane.getGeometry().position);
             this.shootPermission = false;
             return bullet;
         }
@@ -126,7 +126,7 @@ export class archEnemy {
         if(this.shootPermission && this.cube.position.z <= airplane.getPosition().z){
             let bullet = new EnemyBullet(speed);
             bullet.create(this);
-            bullet.sphere.lookAt(airplane.cone.position);
+            bullet.sphere.lookAt(airplane.getGeometry().position);
             this.shootPermission = false;
             return bullet;
         }
@@ -198,7 +198,7 @@ export class diagonalEnemy {
         if(this.shootPermission && this.cube.position.z <= airplane.getPosition().z){
             let bullet = new EnemyBullet(speed);
             bullet.create(this);
-            bullet.sphere.lookAt(airplane.cone.position);
+            bullet.sphere.lookAt(airplane.getGeometry().position);
             this.shootPermission = false;
             return bullet;
         }

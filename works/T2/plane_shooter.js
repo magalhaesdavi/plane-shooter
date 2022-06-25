@@ -11,6 +11,8 @@ import {
 	createGroundPlaneWired
 } from "../../libs/util/util.js";
 import { SecondaryBox } from './helper.js';
+import { GLTFLoader } from '../../build/jsm/loaders/GLTFLoader.js';
+import { OBJLoader } from '../../build/jsm/loaders/OBJLoader.js';
 
 import { Scenario } from './scenario.js';
 import { Airplane } from './plane.js';
@@ -141,23 +143,14 @@ class Game {
         this.isGodMode = false;
         this.scene = new THREE.Scene();    // Create main scene
         this.renderer = initRenderer();    // Init a basic renderer
+        this.renderer.shadowMap.enabled = true;
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000); // Init camera in this position
 
         this.light = new THREE.PointLight(0xedca61, 2.5, LIGHT_RANGE);
         this.light.castShadow = true;
 
-        /*
-        this.light.shadow.mapSize.width = 128;
-        this.light.shadow.mapSize.height = 128;
-        this.light.shadow.camera.near = .1;
-        this.light.shadow.camera.far = 6;
-        this.light.shadow.camera.left = -2.5;
-        this.light.shadow.camera.right = 2.5;
-        this.light.shadow.camera.bottom = -2.5;
-        this.light.shadow.camera.top = 2.5;
-        this.light.shadow.bias = -0.0005;
-        this.light.shadow.radius = 4;
-        */
+        this.loader = new GLTFLoader();
+
         this.scene.add(this.light);
 
         // Creating a holder for the camera
@@ -189,7 +182,7 @@ class Game {
         this.scene.add(scenario.ground_plane);
         this.scene.add(scenario.second_ground_plane);
         
-        this.scene.add(airplane.cone);
+        this.scene.add(airplane.getGeometry());
         airplane.setInitialOrResetPosition();
     }
 
@@ -197,7 +190,7 @@ class Game {
         this.cameraHolder.position.set(0, CAMERA_HEIGHT, 100);
         this.light.position.set(0, LIGHT_HEIGHT, LIGHT_Z_DISTANCE);
         
-        this.scene.add(airplane.cone);
+        this.scene.add(airplane.getGeometry());
         airplane.setInitialOrResetPosition(false);
         this.started = false;
     }
@@ -208,6 +201,29 @@ class Game {
 
     addOnScene(object) {
         this.scene.add(object);
+    }
+
+    async loadModel(path='./assets/plane.obj', objectName="obj1") {
+        let model = await this.loader.loadAsync(
+            path, 
+            null
+        );
+
+        model.scene.traverse( 
+            function ( child ) {
+                if ( child ) {
+                    child.castShadow = true;
+                }
+            }
+        );
+
+        model.scene.traverse(
+            function( node ) {
+                if( node.material ) node.material.side = THREE.DoubleSide;
+            }
+        );
+
+        return model.scene;
     }
 
     godMode() {
@@ -287,7 +303,8 @@ let keyboard = new KeyboardState();
 let main_scenario = new Scenario(600, 600);
 
 // Create plane
-let airplane = new Airplane();
+let airplaneModel = await game.loadModel('./assets/plane.glb');
+let airplane = new Airplane(airplaneModel);
 
 // Initializing the game
 game.init(airplane, main_scenario);
@@ -369,7 +386,7 @@ function fullReset() {
     clearGeometryArray(enemies);
     clearGeometryArray(enemyBullets);
     clearGeometryArray(lives);
-    airplane.cone.scale.set(1, 1, 1);
+    airplane.getGeometry().scale.set(1, 1, 1);
     airplane.life = 5;
     game.started = false;
     game.running = false;
@@ -450,20 +467,20 @@ function keyboardUpdate() {
 
     // Airplane controls
     if ( keyboard.pressed("left") && game.running) {
-        if ((airplane.cone.position.x - game.cameraHolder.position.x) > -70 )
-            airplane.cone.translateX(-1);
+        if ((airplane.getGeometry().position.x - game.cameraHolder.position.x) > -70 )
+            airplane.getGeometry().translateX(-1);
     }
     if ( keyboard.pressed("right") && game.running ) {
-        if ((airplane.cone.position.x - game.cameraHolder.position.x) < 70 )
-            airplane.cone.translateX(1);
+        if ((airplane.getGeometry().position.x - game.cameraHolder.position.x) < 70 )
+            airplane.getGeometry().translateX(1);
     }
     if ( keyboard.pressed("up") && game.running ) {
-        if ((airplane.cone.position.z - game.cameraHolder.position.z) > -200 )
-            airplane.cone.translateY(1);
+        if ((airplane.getGeometry().position.z - game.cameraHolder.position.z) > -200 )
+            airplane.getGeometry().translateY(1);
     }
     if ( keyboard.pressed("down") && game.running ) {
-        if ((airplane.cone.position.z - game.cameraHolder.position.z) < -50 )
-            airplane.cone.translateY(-1);
+        if ((airplane.getGeometry().position.z - game.cameraHolder.position.z) < -50 )
+            airplane.getGeometry().translateY(-1);
     }
     if (keyboard.down("G")) {
         game.godMode();
@@ -542,17 +559,17 @@ async function checkBoundariesAndCollisions() {
                     // Aviao toma dano
                     if (airplane.life > 2) {
                         //Animacao de dano
-                        gsap.to(airplane.cone.scale, {x:0.3, y: 0.3, z: 0.3, duration: 0.05});
+                        gsap.to(airplane.getGeometry().scale, {x:0.3, y: 0.3, z: 0.3, duration: 0.05});
                         gsap.to(temp_cube.scale, {x:0, y: 0, z: 0, duration: 0.05});
                         await sleep(100);
                         game.scene.remove(temp_cube);
                         i--;
-                        gsap.to(airplane.cone.scale, {x:1, y: 1, z: 1, duration: 0.1});
+                        gsap.to(airplane.getGeometry().scale, {x:1, y: 1, z: 1, duration: 0.1});
                         airplane.decreaseLife(2);
                     }
                     else { // Aviao morre
                         //Animação de colisão
-                        gsap.to(airplane.cone.scale, {x:0, y: 0, z: 0, duration: 0.25});
+                        gsap.to(airplane.getGeometry().scale, {x:0, y: 0, z: 0, duration: 0.25});
                         gsap.to(temp_cube.scale, {x:0, y: 0, z: 0, duration: 0.25});
                         await sleep(550);
                         game.scene.remove(temp_cube);
@@ -617,9 +634,9 @@ async function checkBoundariesAndCollisions() {
                     // Aviao toma dano
                     if (airplane.life > 1) {
                         //Animacao de dano
-                        gsap.to(airplane.cone.scale, { x:0.3, y: 0.3, z: 0.3, duration: 0.1 });
+                        gsap.to(airplane.getGeometry().scale, { x:0.3, y: 0.3, z: 0.3, duration: 0.1 });
                         await sleep(100)
-                        gsap.to(airplane.cone.scale, { x:1, y: 1, z: 1, duration: 0.1 });
+                        gsap.to(airplane.getGeometry().scale, { x:1, y: 1, z: 1, duration: 0.1 });
 
                         if (isGroundMissile)
                             airplane.decreaseLife(2);
@@ -628,7 +645,7 @@ async function checkBoundariesAndCollisions() {
                     }
                     else { // Aviao morre
                         //Animação de colisão
-                        gsap.to(airplane.cone.scale, { x:0, y: 0, z: 0, duration: 0.25 });
+                        gsap.to(airplane.getGeometry().scale, { x:0, y: 0, z: 0, duration: 0.25 });
                         await sleep(300);
                         fullReset();
                         defeat();
