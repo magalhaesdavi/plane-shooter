@@ -10,8 +10,12 @@ export class Scenario {
 		this.threshold = width/2;
 		this.height = height;
 		this.width = width;
+
 		this.ground_plane = createGroundPlaneWired(height, width, 30, 30);
+		this.ground_plane.receiveShadow = true;
+		
 		this.second_ground_plane = createGroundPlaneWired(height, width, 30, 30);
+		this.second_ground_plane.receiveShadow = true;
 		this.second_ground_plane.position.set(0, 0, 2*width);
 	}
 
