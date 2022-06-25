@@ -14,7 +14,7 @@ function degreesToRadians(degrees)
 */}
 export class lineEnemy {
     constructor(speed, model) {
-        this.geometry = new THREE.BoxGeometry( 5, 5, 5 );
+        this.geometry = new THREE.BoxGeometry(6, 6, 6);
         this.material = new THREE.MeshLambertMaterial({
             color: 0x62bf06,
             transparent: model ? true : false,
@@ -99,7 +99,7 @@ export class lineEnemy {
 
 export class archEnemy {
     constructor(direction='left', model) {
-        this.geometry = new THREE.BoxGeometry( 5, 5, 5 );
+        this.geometry = new THREE.BoxGeometry(6, 6, 6);
         this.material = new THREE.MeshLambertMaterial({
             color: 0xFF0000,
             transparent: model ? true : false,
@@ -191,7 +191,7 @@ export class archEnemy {
 export class diagonalEnemy {
     constructor(direction, speed, model) {
         this.direction = direction;
-        this.geometry = new THREE.BoxGeometry( 5, 5, 5 );
+        this.geometry = new THREE.BoxGeometry(6, 6, 6);
         this.material = new THREE.MeshLambertMaterial({
             color: 0xFF0000,
             transparent: model ? true : false,
