@@ -61,6 +61,7 @@ export class lineEnemy {
         }
         if(this.direction == 'horizontal'){
             this.object.translateX(this.speed);
+            this.object.translateZ(-0.5);
         }
         this.boundingBox.copy(this.object.geometry.boundingBox).applyMatrix4(this.object.matrixWorld);
     }

@@ -8,7 +8,7 @@ import { degreesToRadians } from '../../libs/util/util.js';
 export class Bullet {
     constructor(speed, color = null) {
         this.geometry = new THREE.SphereGeometry( 0.75, 32, 32 );
-        this.material = new THREE.MeshLambertMaterial( { color: color ? color : 0xffa500 } );
+        this.material = new THREE.MeshLambertMaterial( { color: color ? color : 0x201cff } );
         this.sphere = new THREE.Mesh( this.geometry, this.material );
         this.speed = speed * 2.25;
         this.boundingBox = new THREE.Box3().setFromObject(this.sphere);

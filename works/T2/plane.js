@@ -4,7 +4,7 @@ import { Bomb, Bullet } from './bullets.js';
 
 const AIRPLANE_HEIGHT = 20;
 const AIRPLANE_CADENCY = 250;
-const AIRPLANE_BULLET_COLOR = 0x2be3c1;
+const AIRPLANE_BULLET_COLOR = 0xfcfaff;
 
 {/**
     Classe referente ao objeto que controla as

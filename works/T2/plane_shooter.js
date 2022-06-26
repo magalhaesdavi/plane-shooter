@@ -25,6 +25,7 @@ const LIGHT_Z_DISTANCE = 70;
 const LIGHT_RANGE = 600;
 const AIR_ENEMIES_HEIGHT = 20;
 const SPEED = 1;
+const ENEMIES_X_LIMITS = [-250, 180]
 
 let bullets = [];
 let enemyBullets = [];
@@ -72,14 +73,19 @@ async function spawnEnemy(type){
         if(Math.random() >= 0.5){
             let lineEnemyModel = await game.loadModel('./assets/fighter6.glb');
             var new_enemy = new lineEnemy(1, lineEnemyModel, 'vertical');
-            new_enemy.setPosition(Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1), AIR_ENEMIES_HEIGHT,
-                                    game.cameraHolder.position.z - 300);
+            new_enemy.setPosition(Math.ceil(
+                Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1),
+                AIR_ENEMIES_HEIGHT,
+                game.cameraHolder.position.z - 300
+            );
         }
         else{
             let lineEnemyModel = await game.loadModel('./assets/fighter2.gltf');
             var new_enemy = new lineEnemy(1, lineEnemyModel, 'horizontal');
-            new_enemy.setPosition(-70, AIR_ENEMIES_HEIGHT,
-                                    Math.floor(Math.random() * (game.cameraHolder.position.z - 300 - game.cameraHolder.position.z - 100 + 1) + game.cameraHolder.position.z - 100));
+            new_enemy.setPosition(-180,
+                AIR_ENEMIES_HEIGHT,
+                Math.floor(Math.random() * (game.cameraHolder.position.z - 300 - game.cameraHolder.position.z - 100 + 1) + game.cameraHolder.position.z - 100)
+            );
         }
         enemies.push(new_enemy);
         game.scene.add(new_enemy.getGeometry());
@@ -103,13 +109,13 @@ async function spawnEnemy(type){
         let diagonalEnemyModel = await game.loadModel('./assets/fighter5.glb');
         if(Math.random() >= 0.5){
             var new_enemy = new diagonalEnemy('left', 1, diagonalEnemyModel);
-            new_enemy.setPosition(-140, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 250);
+            new_enemy.setPosition(-170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 250);
             enemies.push(new_enemy);
             game.scene.add(new_enemy.getGeometry());
         }
         else{
             var new_enemy = new diagonalEnemy('right', 1, diagonalEnemyModel);
-            new_enemy.setPosition(140, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 250);
+            new_enemy.setPosition(170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 250);
             enemies.push(new_enemy);
             game.scene.add(new_enemy.getGeometry());
         }
@@ -588,8 +594,8 @@ async function checkBoundariesAndCollisions() {
         }
         
         //Removendo inimigos que saíram da tela
-        if(enemies[i].getGeometry().position.z > game.cameraHolder.position.z - 40 || enemies[i].getGeometry().position.x > 151 || 
-            enemies[i].getGeometry().position.x < -200) {
+        if(enemies[i].getGeometry().position.z > game.cameraHolder.position.z - 40 || enemies[i].getGeometry().position.x > ENEMIES_X_LIMITS[1] || 
+            enemies[i].getGeometry().position.x < ENEMIES_X_LIMITS[0]) {
             game.scene.remove(enemies[i].getGeometry());
             enemies.splice(i, 1);
             i--;
