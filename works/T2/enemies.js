@@ -13,7 +13,7 @@ function degreesToRadians(degrees)
     funcionalidades de um inimigo'.
 */}
 export class lineEnemy {
-    constructor(speed, model) {
+    constructor(speed, model, direction) {
         this.geometry = new THREE.BoxGeometry(6, 6, 6);
         this.material = new THREE.MeshLambertMaterial({
             color: 0x62bf06,
@@ -21,6 +21,7 @@ export class lineEnemy {
             opacity: 0
         });
         this.object = new THREE.Mesh( this.geometry, this.material );
+        this.direction = direction;
 
         if (!model) {
             this.model = null;
@@ -55,7 +56,12 @@ export class lineEnemy {
             this.shootPermission = true;
             this.startTime = new Date();
         }
-        this.object.translateZ(this.speed);
+        if(this.direction == 'vertical'){
+            this.object.translateZ(this.speed);
+        }
+        if(this.direction == 'horizontal'){
+            this.object.translateX(this.speed);
+        }
         this.boundingBox.copy(this.object.geometry.boundingBox).applyMatrix4(this.object.matrixWorld);
     }
 

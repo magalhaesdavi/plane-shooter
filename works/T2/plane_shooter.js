@@ -69,10 +69,18 @@ var Timer = function(callback, delay) {
 
 async function spawnEnemy(type){
     if(type == 'line'){
-        let lineEnemyModel = await game.loadModel('./assets/fighter6.glb');
-        var new_enemy = new lineEnemy(1, lineEnemyModel);
-        new_enemy.setPosition(Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1), AIR_ENEMIES_HEIGHT,
-                                game.cameraHolder.position.z - 300);
+        if(Math.random() >= 0.5){
+            let lineEnemyModel = await game.loadModel('./assets/fighter6.glb');
+            var new_enemy = new lineEnemy(1, lineEnemyModel, 'vertical');
+            new_enemy.setPosition(Math.ceil(Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1), AIR_ENEMIES_HEIGHT,
+                                    game.cameraHolder.position.z - 300);
+        }
+        else{
+            let lineEnemyModel = await game.loadModel('./assets/fighter2.gltf');
+            var new_enemy = new lineEnemy(1, lineEnemyModel, 'horizontal');
+            new_enemy.setPosition(-70, AIR_ENEMIES_HEIGHT,
+                                    Math.floor(Math.random() * (game.cameraHolder.position.z - 300 - game.cameraHolder.position.z - 100 + 1) + game.cameraHolder.position.z - 100));
+        }
         enemies.push(new_enemy);
         game.scene.add(new_enemy.getGeometry());
     }
