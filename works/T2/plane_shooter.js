@@ -155,6 +155,7 @@ function switchLifeSpawnPermission(){
 class Game {
     constructor() {
         this.started = false;
+        this.ended = false;
         this.running = false;
         this.paused = false;
         this.isGodMode = false;
@@ -450,6 +451,7 @@ const defeat = () => {
     button2.style.display = "";
     painel.style.display = 'none';
     vidas.style.display = 'none';
+    game.ended = true;
 }
 
 function fullReset() {
@@ -783,6 +785,11 @@ function render()
 
         //Movimento dos inimigos
         checkBoundariesAndCollisions();
+    }
+    if ( game.ended && keyboard.pressed("enter") ) {
+        onStartButtonPressed();
+        updateLives();
+        game.ended = false;
     }
     if (game.isGodMode) {
         infoBox.changeMessage("God Mode ON");  

@@ -151,7 +151,7 @@ export class archEnemy {
             this.startTime = new Date();
         }
         
-        this.object.rotateY(degreesToRadians(1 * (this.direction === 'left' ? -1 : 1)));
+        this.object.rotateY(degreesToRadians(1 * (this.direction == 'left' ? -1 : 1)));
         this.object.translateZ((this.object.rotation.y + 3.5)*0.85);
 
         this.boundingBox.copy(this.object.geometry.boundingBox).applyMatrix4(this.object.matrixWorld);
