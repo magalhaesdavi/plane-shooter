@@ -180,7 +180,7 @@ class Game {
         this.gameLevel = 0;
         this.ENEMY_SPAWN_PROBABILITY = 0.05;
         this.LIFE_SPAWN_PROBABILITY = 0.0025;
-        this.levelDuration = [20000, 5000, 20000, 5000, 20000]
+        this.levelDuration = [20000, 5000, 20000, 5000, 20000, 20000, 5000]
         this.enemySpawnPermission = true;
         this.lifeSpawnPermission = true;
         this.enemySpawnWait = 800;
@@ -476,6 +476,11 @@ function fullReset() {
     timers = [];
 }
 
+const finishGame = () => {
+    fullReset();
+    victory();
+};
+
 const onStartButtonPressed = () => {
     instructions.style.display = 'none';
     blocker.style.display = 'none';
@@ -488,6 +493,10 @@ const onStartButtonPressed = () => {
         timers[4] = levelThreeTimer;
         var levelFourTimer = new Timer(advance_level, sumFirstElements(game.levelDuration, 4));
         timers[5] = levelFourTimer;
+        var levelFiveTimer = new Timer(() => {}, sumFirstElements(game.levelDuration, 5));
+        timers[6] = levelFiveTimer;
+        var levelSixTimer = new Timer(finishGame, sumFirstElements(game.levelDuration, 6));
+        timers[7] = levelSixTimer;
         game.started = true;
     }
     game.running = !game.running;
