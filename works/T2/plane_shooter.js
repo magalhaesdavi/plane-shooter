@@ -82,9 +82,10 @@ async function spawnEnemy(type){
         else{
             let lineEnemyModel = await game.loadModel('./assets/fighter2.gltf');
             var new_enemy = new lineEnemy(1, lineEnemyModel, 'horizontal');
-            new_enemy.setPosition(-180,
+            new_enemy.setPosition(
+                -170,
                 AIR_ENEMIES_HEIGHT,
-                Math.floor(Math.random() * (game.cameraHolder.position.z - 300 - game.cameraHolder.position.z - 100 + 1) + game.cameraHolder.position.z - 100)
+                (game.cameraHolder.position.z - 250) + (-1 *  Math.random() * (game.cameraHolder.position.z - 70 ))
             );
         }
         enemies.push(new_enemy);
@@ -252,14 +253,13 @@ class Game {
     update() {
         if(this.gameLevel == 0 && this.enemySpawnPermission){
             spawnEnemy('line');
-            spawnEnemy('line');
             this.enemySpawnPermission = false;
             var permissionTimer1 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
             timers[0] = permissionTimer1;
         }
         
         if(this.gameLevel == 1 && this.enemySpawnPermission){
-            this.enemySpawnWait = 650;
+            this.enemySpawnWait = 1000;
             spawnEnemy('line');
             spawnEnemy('ground');
             this.enemySpawnPermission = false;
@@ -268,23 +268,22 @@ class Game {
         }
         if(this.gameLevel == 2 && this.enemySpawnPermission){
             this.enemySpawnWait = 1000;
-            spawnEnemy('line');
+            spawnEnemy('geound');
             spawnEnemy('arch');
             this.enemySpawnPermission = false;
             var permissionTimer3 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
             timers[0] = permissionTimer3;
         }
         if(this.gameLevel == 3 && this.enemySpawnPermission){
-            this.enemySpawnWait = 800;
-            spawnEnemy('line');
+            this.enemySpawnWait = 1000;
             spawnEnemy('arch');
+            spawnEnemy('diag');
             this.enemySpawnPermission = false;
             var permissionTimer3 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
             timers[0] = permissionTimer3;
         }
         if(this.gameLevel == 4 && this.enemySpawnPermission){
             this.enemySpawnWait = 1000;
-            spawnEnemy('line');
             spawnEnemy('diag');
             spawnEnemy('arch');
             spawnEnemy('ground');
@@ -545,7 +544,6 @@ function keyboardUpdate() {
         vidas.style.display = 'none';
         updateLives();
     }
-
     // Airplane controls
     if ( keyboard.pressed("left") && game.running) {
         if ((airplane.getGeometry().position.x - game.cameraHolder.position.x) > -70 )
