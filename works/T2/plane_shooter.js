@@ -38,8 +38,8 @@ const infoBox = new SecondaryBox("God Mode OFF");
 const clearGeometryArray = (array) => {
     array.forEach((element, idx) => {
         game.scene.remove(element.getGeometry());
-        array.splice(idx, 1)
     });
+    array.length = 0;
 };
 
 var Timer = function(callback, delay) {
