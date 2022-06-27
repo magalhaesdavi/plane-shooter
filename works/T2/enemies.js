@@ -106,6 +106,7 @@ export class lineEnemy {
 
 export class archEnemy {
     constructor(direction='left', model) {
+        this.direction = direction;
         this.geometry = new THREE.BoxGeometry(6, 6, 6);
         this.material = new THREE.MeshLambertMaterial({
             color: 0xFF0000,
@@ -125,9 +126,8 @@ export class archEnemy {
             this.object.add(this.model);
         }
 
-        this.object.rotateY(degreesToRadians(45 * (this.direction === 'left' ? -1 : 1)));
+        this.object.rotateY(degreesToRadians(45 * (this.direction == 'left' ? 1 : -1)));
 
-        this.direction = direction;
         this.boundingBox = new THREE.Box3().setFromObject(this.object);
         this.shootPermission = false;
         this.startTime = new Date();
@@ -151,8 +151,8 @@ export class archEnemy {
             this.startTime = new Date();
         }
         
-        this.object.rotateY(degreesToRadians(1 * (this.direction == 'left' ? -1 : 1)));
-        this.object.translateZ((this.object.rotation.y + 3.5)*0.85);
+        this.object.rotateY(degreesToRadians(0.55 * (this.direction == 'left' ? 1 : -1)));
+        this.object.translateZ((this.object.rotation.y * (this.direction == 'left' ? -1 : 1) + 3.5)*0.85);
 
         this.boundingBox.copy(this.object.geometry.boundingBox).applyMatrix4(this.object.matrixWorld);
     }

@@ -94,14 +94,14 @@ async function spawnEnemy(type){
     if(type == 'arch'){
         let archEnemyModel = await game.loadModel('./assets/fighter1.glb');
         if(Math.random() >= 0.5){
-            let new_enemy = new archEnemy('right', archEnemyModel);
-            new_enemy.setPosition(-170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 210);
+            let new_enemy = new archEnemy('left', archEnemyModel);
+            new_enemy.setPosition(-170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 260);
             enemies.push(new_enemy);
             game.scene.add(new_enemy.getGeometry());
         }
         else{
-            let new_enemy = new archEnemy('left', archEnemyModel);
-            new_enemy.setPosition(170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 210);
+            let new_enemy = new archEnemy('right', archEnemyModel);
+            new_enemy.setPosition(170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 260);
             enemies.push(new_enemy);
             game.scene.add(new_enemy.getGeometry());
         }
@@ -268,7 +268,7 @@ class Game {
         }
         if(this.gameLevel == 2 && this.enemySpawnPermission){
             this.enemySpawnWait = 1000;
-            spawnEnemy('geound');
+            spawnEnemy('ground');
             spawnEnemy('arch');
             this.enemySpawnPermission = false;
             var permissionTimer3 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
