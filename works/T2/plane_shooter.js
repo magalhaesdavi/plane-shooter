@@ -180,7 +180,7 @@ class Game {
         this.gameLevel = 0;
         this.ENEMY_SPAWN_PROBABILITY = 0.05;
         this.LIFE_SPAWN_PROBABILITY = 0.0025;
-        this.levelDuration = [20000, 5000, 20000, 5000, 20000, 20000, 5000]
+        this.levelDuration = [ 20000, 20000, 20000, 30000, 20000, 20000, 20000 ]
         this.enemySpawnPermission = true;
         this.lifeSpawnPermission = true;
         this.enemySpawnWait = 800;
@@ -435,6 +435,7 @@ const victory = () => {
     button2.style.display = '';
     painel.style.display = 'none';
     vidas.style.display = 'none';
+    game.ended = true;
 }
 
 const defeat = () => {
