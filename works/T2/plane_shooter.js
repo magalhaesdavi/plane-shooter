@@ -163,14 +163,27 @@ class Game {
         this.scene = new THREE.Scene();    // Create main scene
         this.renderer = initRenderer();    // Init a basic renderer
         this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000); // Init camera in this position
 
-        this.light = new THREE.PointLight(0xedca61, 2.5, LIGHT_RANGE);
+        this.light = new THREE.DirectionalLight(0xffffff, 0.9);
         this.light.castShadow = true;
+        this.light.shadow.mapSize.width = 512
+        this.light.shadow.mapSize.height = 512
+        this.light.shadow.camera.near = 0.5
+        this.light.shadow.camera.far = 100
 
-        this.loader = new GLTFLoader();
+        this.light.shadow.camera.left = -10;
+        this.light.shadow.camera.right = 10;
+        this.light.shadow.camera.top = 10;
+        this.light.shadow.camera.bottom = -10;
 
         this.scene.add(this.light);
+
+        this.helper = new THREE.CameraHelper(this.light.shadow.camera);
+        this.scene.add(this.helper);
+
+        this.loader = new GLTFLoader();
 
         // Creating a holder for the camera
         this.cameraHolder = new THREE.Object3D();
@@ -193,11 +206,13 @@ class Game {
         this.cameraHolder.position.set(0, CAMERA_HEIGHT, 100);
         this.cameraHolder.rotateX(degreesToRadians(-40));
 
+        /*
         this.light.lookAt(0, 0, 0);
         this.light.up.set( 0, 1, 0 );
         this.light.position.set(0, LIGHT_HEIGHT, LIGHT_Z_DISTANCE);
-        this.light.rotateX(degreesToRadians(-45));
-        
+        */
+        //this.light.rotateX(degreesToRadians(90));
+       
         this.scene.add(scenario.ground_plane);
         this.scene.add(scenario.second_ground_plane);
         
