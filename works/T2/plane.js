@@ -30,6 +30,7 @@ export class Airplane {
             this.object.add(this.model);
         }
 
+        this.isRotated = false;
         this.boundingBox = new THREE.Box3().setFromObject(this.object);
         this.shootPermission = false;
         this.startTime = new Date();

@@ -8,7 +8,8 @@ import {
 	InfoBox,
 	onWindowResize,
     degreesToRadians,
-	createGroundPlaneWired
+	createGroundPlaneWired,
+    radiansToDegrees
 } from "../../libs/util/util.js";
 import { SecondaryBox } from './helper.js';
 import { GLTFLoader } from '../../build/jsm/loaders/GLTFLoader.js';
@@ -291,15 +292,14 @@ class Game {
         }
         
         if(this.gameLevel == 1 && this.enemySpawnPermission){
-            this.enemySpawnWait = 1000;
+            this.enemySpawnWait = 1500;
             spawnEnemy('line');
-            spawnEnemy('ground');
             this.enemySpawnPermission = false;
             var permissionTimer2 = new Timer(switchEnemySpawnPermission, this.enemySpawnWait);
             timers[0] = permissionTimer2;
         }
         if(this.gameLevel == 2 && this.enemySpawnPermission){
-            this.enemySpawnWait = 1000;
+            this.enemySpawnWait = 1500;
             spawnEnemy('ground');
             spawnEnemy('arch');
             this.enemySpawnPermission = false;
@@ -588,12 +588,23 @@ function keyboardUpdate() {
     }
     // Airplane controls
     if ( keyboard.pressed("left") && game.running) {
-        if ((airplane.getGeometry().position.x - game.cameraHolder.position.x) > -70 )
+        if ((airplane.getGeometry().position.x - game.cameraHolder.position.x) > -70 ) {
             airplane.getGeometry().translateX(-1);
+            
+            gsap.to(airplane.model.rotation, { z: -2, duration: 2 });
+            if (!airplane.isRotated) {
+                console.log(radiansToDegrees(airplane.model.rotation.z));
+                airplane.isRotated = true;
+            }
+        }
     }
     if ( keyboard.pressed("right") && game.running ) {
         if ((airplane.getGeometry().position.x - game.cameraHolder.position.x) < 70 )
             airplane.getGeometry().translateX(1);
+            gsap.to(airplane.model.rotation, { z: 2, duration: 2 });
+            if (!airplane.isRotated) {
+                airplane.isRotated = true;
+            }
     }
     if ( keyboard.pressed("up") && game.running ) {
         if ((airplane.getGeometry().position.z - game.cameraHolder.position.z) > -200 )
@@ -618,6 +629,9 @@ function keyboardUpdate() {
         if(bullet != null) {
             bullets.push(bullet);
         }
+    }
+    if (keyboard.up("left")) {
+        console.log("OPA");
     }
 }
 
