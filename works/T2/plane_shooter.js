@@ -166,22 +166,23 @@ class Game {
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000); // Init camera in this position
 
+        this.lightPosition = new THREE.Vector3(0, 0, 0);
         this.light = new THREE.DirectionalLight(0xffffff, 0.9);
+
+        this.light.position.copy(this.lightPosition);
         this.light.castShadow = true;
         this.light.shadow.mapSize.width = 512
         this.light.shadow.mapSize.height = 512
         this.light.shadow.camera.near = 0.5
-        this.light.shadow.camera.far = 100
+        this.light.shadow.camera.far = 500
 
-        this.light.shadow.camera.left = -10;
-        this.light.shadow.camera.right = 10;
-        this.light.shadow.camera.top = 10;
-        this.light.shadow.camera.bottom = -10;
+        this.light.shadow.camera.left = -150;
+        this.light.shadow.camera.right = 150;
+        this.light.shadow.camera.top = 100;
+        this.light.shadow.camera.bottom = -50;
 
         this.scene.add(this.light);
-
-        this.helper = new THREE.CameraHelper(this.light.shadow.camera);
-        this.scene.add(this.helper);
+        this.scene.add(this.light.target);
 
         this.loader = new GLTFLoader();
 
@@ -190,6 +191,10 @@ class Game {
         this.cameraHolder.add(this.camera);
         this.scene.add(this.cameraHolder);
 
+        this.lightTarget = new THREE.Object3D();
+        this.light.target = this.lightTarget;
+        this.scene.add(this.lightTarget);
+
         this.gameLevel = 0;
         this.ENEMY_SPAWN_PROBABILITY = 0.05;
         this.LIFE_SPAWN_PROBABILITY = 0.0025;
@@ -197,7 +202,7 @@ class Game {
         this.enemySpawnPermission = true;
         this.lifeSpawnPermission = true;
         this.enemySpawnWait = 800;
-        this.lifeSpawnWait = 8000;
+        this.lifeSpawnWait = 8000;    
     }
 
     init(airplane, scenario) {
@@ -206,12 +211,8 @@ class Game {
         this.cameraHolder.position.set(0, CAMERA_HEIGHT, 100);
         this.cameraHolder.rotateX(degreesToRadians(-40));
 
-        /*
-        this.light.lookAt(0, 0, 0);
-        this.light.up.set( 0, 1, 0 );
-        this.light.position.set(0, LIGHT_HEIGHT, LIGHT_Z_DISTANCE);
-        */
-        //this.light.rotateX(degreesToRadians(90));
+        this.light.position.set(0, 50, 30);
+        this.lightTarget.position.set(0, 10, -20);
        
         this.scene.add(scenario.ground_plane);
         this.scene.add(scenario.second_ground_plane);
@@ -222,11 +223,27 @@ class Game {
 
     reset(airplane, scenario) {
         this.cameraHolder.position.set(0, CAMERA_HEIGHT, 100);
-        this.light.position.set(0, LIGHT_HEIGHT, LIGHT_Z_DISTANCE);
+        this.light.position.set(0, 50, 30);
+        this.lightTarget.position.set(0, 10, -20);
         
         this.scene.add(airplane.getGeometry());
         airplane.setInitialOrResetPosition(false);
         this.started = false;
+    }
+
+    moveLight(speed=1) {
+        this.light.matrixAutoUpdate = false;    
+        var mat4 = new THREE.Matrix4();
+
+        this.lightPosition.z -= SPEED;
+
+        this.light.matrix.identity();
+        this.light.matrix.multiply(
+            mat4.makeTranslation(
+                this.lightPosition.x,
+                this.lightPosition.y,
+                this.lightPosition.z
+        ));
     }
 
     start() {
@@ -805,6 +822,9 @@ function render()
 
         game.cameraHolder.position.z -= SPEED;
         game.light.position.z -= SPEED;
+        game.lightTarget.position.z -= SPEED;
+        //game.moveLight();
+
 
         //Movimento dos inimigos
         checkBoundariesAndCollisions();
