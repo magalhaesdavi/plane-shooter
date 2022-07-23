@@ -307,7 +307,7 @@ class Game {
             timers[0] = permissionTimer3;
         }
         if(this.gameLevel == 3 && this.enemySpawnPermission){
-            this.enemySpawnWait = 1000;
+            this.enemySpawnWait = 1500;
             spawnEnemy('arch');
             spawnEnemy('diag');
             this.enemySpawnPermission = false;
@@ -315,7 +315,7 @@ class Game {
             timers[0] = permissionTimer3;
         }
         if(this.gameLevel == 4 && this.enemySpawnPermission){
-            this.enemySpawnWait = 1000;
+            this.enemySpawnWait = 1750;
             spawnEnemy('diag');
             spawnEnemy('arch');
             spawnEnemy('ground');
@@ -553,10 +553,10 @@ function sumFirstElements(array, n){
     return sum;
 }
 
-function keyboardUpdate() {
+async function keyboardUpdate() {
     keyboard.update();
 
-    if ( keyboard.down("P") ) {
+    if ( keyboard.down("P") ) { //PAUSA O GAME
         if(game.started){
             if(!game.paused){
                 for(var i = 0; i < timers.length; i++){
@@ -577,7 +577,7 @@ function keyboardUpdate() {
             game.running = !game.running;
         }
     }
-    if ( keyboard.pressed("R") ) {
+    if ( keyboard.pressed("R") ) { //RESETA O GAME
         fullReset();
         blocker.style.display = 'block';
         instructions.style.display = '';
@@ -587,51 +587,58 @@ function keyboardUpdate() {
         updateLives();
     }
     // Airplane controls
-    if ( keyboard.pressed("left") && game.running) {
+    if ( keyboard.pressed("left") && game.running) { //MOVE AVIAO PARA ESQUERDA
         if ((airplane.getGeometry().position.x - game.cameraHolder.position.x) > -70 ) {
             airplane.getGeometry().translateX(-1);
             
-            gsap.to(airplane.model.rotation, { z: -2, duration: 2 });
             if (!airplane.isRotated) {
-                console.log(radiansToDegrees(airplane.model.rotation.z));
+                gsap.to(airplane.model.rotation, { z: degreesToRadians(135), duration: 0.3 });
                 airplane.isRotated = true;
             }
         }
     }
-    if ( keyboard.pressed("right") && game.running ) {
-        if ((airplane.getGeometry().position.x - game.cameraHolder.position.x) < 70 )
+    if (keyboard.up("left")) { //ALINHA INCLINACAO DO AVIAO (ESQUERDA)
+        gsap.to(airplane.model.rotation, { z: degreesToRadians(180), duration: 0.3 });
+        await sleep(250);
+        airplane.isRotated = false;
+    }
+    if ( keyboard.pressed("right") && game.running) { //MOVE AVIAO PARA DIREITA
+        if ((airplane.getGeometry().position.x - game.cameraHolder.position.x) < 70 ) {
             airplane.getGeometry().translateX(1);
-            gsap.to(airplane.model.rotation, { z: 2, duration: 2 });
+
             if (!airplane.isRotated) {
+                gsap.to(airplane.model.rotation, { z: degreesToRadians(225), duration: 0.3 });
                 airplane.isRotated = true;
             }
+        }
     }
-    if ( keyboard.pressed("up") && game.running ) {
+    if (keyboard.up("right")) { //ALINHA INCLINACAO DO AVIAO (DIREITA)
+        gsap.to(airplane.model.rotation, { z: degreesToRadians(180), duration: 0.3 });
+        await sleep(250);
+        airplane.isRotated = false;
+    }
+    if ( keyboard.pressed("up") && game.running ) { //MOVE AVIAO PARA CIMA
         if ((airplane.getGeometry().position.z - game.cameraHolder.position.z) > -200 )
             airplane.getGeometry().translateY(1);
     }
-    if ( keyboard.pressed("down") && game.running ) {
+    if ( keyboard.pressed("down") && game.running ) { //MOVE AVIAO PARA BAIXO
         if ((airplane.getGeometry().position.z - game.cameraHolder.position.z) < -50 )
             airplane.getGeometry().translateY(-1);
     }
-    if (keyboard.down("G")) {
+    if (keyboard.down("G")) { //GOD MODE
         game.godMode();
     }
-    if (keyboard.pressed("space") && game.running) {
-        //novo tiro do aviao para baixo
+    if (keyboard.pressed("space") && game.running) { //TIRO BOMBA
         let bomb = airplane.bomb(SPEED, airplane, game);
         if (bomb != null) {
             bullets.push(bomb);
         }
     }
-    if (keyboard.pressed("ctrl") && game.running ) {
+    if (keyboard.pressed("ctrl") && game.running ) { //TIRO MISSEIS
         let bullet = airplane.shoot(SPEED, airplane, game);
         if(bullet != null) {
             bullets.push(bullet);
         }
-    }
-    if (keyboard.up("left")) {
-        console.log("OPA");
     }
 }
 
