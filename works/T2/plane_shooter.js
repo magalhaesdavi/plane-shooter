@@ -19,6 +19,7 @@ import { Airplane } from './plane.js';
 import { lineEnemy, archEnemy, diagonalEnemy, GroundEnemy } from './enemies.js';
 import { Life } from './life.js';
 import { GroundAirEnemyMissile } from './bullets.js';
+import { Explosion } from './explosion.js';
 
 const CAMERA_HEIGHT = 110;
 const LIGHT_HEIGHT = 130;
@@ -822,6 +823,10 @@ async function checkBoundariesAndCollisions() {
 
 }
 
+let explosion1 = new Explosion(0, 20, -50);
+game.addOnScene(explosion1.getGeometry());
+explosion1.getGeometry().lookAt(game.cameraHolder.position);
+
 function render()
 {
     keyboardUpdate();
@@ -844,7 +849,7 @@ function render()
         game.cameraHolder.position.z -= SPEED;
         game.light.position.z -= SPEED;
         game.lightTarget.position.z -= SPEED;
-        //game.moveLight();
+        explosion1.update();
 
 
         //Movimento dos inimigos
