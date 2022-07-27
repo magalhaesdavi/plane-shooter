@@ -659,6 +659,14 @@ async function keyboardUpdate() {
         }
     }
     if (keyboard.pressed("ctrl") && game.running ) { //TIRO MISSEIS
+        airplane.burst = true;
+        let bullet = airplane.shoot(SPEED, airplane, game);
+        if(bullet != null) {
+            bullets.push(bullet);
+        }
+    }
+    if (keyboard.down("ctrl") && game.running ) { //TIRO MISSEIS
+        airplane.burst = false;
         let bullet = airplane.shoot(SPEED, airplane, game);
         if(bullet != null) {
             bullets.push(bullet);

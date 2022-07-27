@@ -16,6 +16,7 @@ export class Airplane {
         this.material = new THREE.MeshLambertMaterial({ transparent : true, opacity: 0 });
         this.material.depthWrite = false;
         this.object = new THREE.Mesh( this.geometry, this.material );
+        this.burst = false;
 
         if (!model) {
             this.model = null;
@@ -73,15 +74,23 @@ export class Airplane {
     }
 
     shoot(speed, airplane, game) {
-        if(this.shootPermission){
+        if(this.burst){
+            if(this.shootPermission){
+                let bullet = new Bullet(speed, AIRPLANE_BULLET_COLOR);
+                bullet.create(airplane);
+                game.addOnScene(bullet.sphere);
+                this.shootPermission = false;
+                return bullet;
+            }
+            else {
+                return null;
+            }
+        }
+        else{
             let bullet = new Bullet(speed, AIRPLANE_BULLET_COLOR);
             bullet.create(airplane);
             game.addOnScene(bullet.sphere);
-            this.shootPermission = false;
             return bullet;
-        }
-        else {
-            return null;
         }
     }
 
