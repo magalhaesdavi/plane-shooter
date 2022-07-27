@@ -34,6 +34,7 @@ let enemyBullets = [];
 let enemies = [];
 let lives = [];
 let timers = [];
+let explosions = []
 
 const infoBox = new SecondaryBox("God Mode OFF");
 
@@ -495,6 +496,7 @@ function fullReset() {
     clearGeometryArray(enemies);
     clearGeometryArray(enemyBullets);
     clearGeometryArray(lives);
+    clearGeometryArray(explosions);
     airplane.getGeometry().scale.set(1, 1, 1);
     airplane.life = 5;
     game.started = false;
@@ -544,6 +546,27 @@ button2.addEventListener("click", defaultInterface);
 
 function advance_level() {
     game.gameLevel++;
+}
+
+function make_explosion(enemy) {
+    let temp_explosion = new Explosion(
+        enemy.getGeometry().position.x,
+        enemy.getGeometry().position.y,
+        enemy.getGeometry().position.z + 5
+    );
+    explosions.push(temp_explosion);
+    game.addOnScene(temp_explosion.getGeometry());
+    temp_explosion.getGeometry().lookAt(game.cameraHolder.position);
+}
+
+function update_explosions() {
+    explosions.forEach((explosion, index) => {
+        explosion.update();
+        if (explosion.ended) {
+            game.scene.remove(explosion.getGeometry());
+            explosions.splice(index, 1);
+        }
+    })
 }
 
 function sumFirstElements(array, n){
@@ -670,7 +693,8 @@ async function checkBoundariesAndCollisions() {
         
         //Removendo inimigos e mísseis que colidiram
         var shot = enemies[i].checkMissileCollision(bullets);
-        if(shot > -1){
+        if(shot > -1) {
+            make_explosion(enemies[i]);
             game.scene.remove(bullets[shot].sphere);
             bullets.splice(shot, 1);
             
@@ -694,6 +718,7 @@ async function checkBoundariesAndCollisions() {
         if (!game.isGodMode) {
             var crash = enemies[i].checkPlaneCollision(airplane)
             if(crash) {
+                make_explosion(enemies[i]);
                 let endTime = new Date();
                 if(endTime - airplane.damageTime >= 100) {
                     let temp_cube = enemies[i].getGeometry();
@@ -770,6 +795,7 @@ async function checkBoundariesAndCollisions() {
             let shot = airplane.checkMissileCollision(enemyBullets);
             
             if(shot > -1) {
+                make_explosion(airplane);
                 const isGroundMissile = (enemyBullets[shot] instanceof GroundAirEnemyMissile);
                 let endTime = new Date();
 
@@ -823,10 +849,6 @@ async function checkBoundariesAndCollisions() {
 
 }
 
-let explosion1 = new Explosion(0, 20, -50);
-game.addOnScene(explosion1.getGeometry());
-explosion1.getGeometry().lookAt(game.cameraHolder.position);
-
 function render()
 {
     keyboardUpdate();
@@ -839,6 +861,8 @@ function render()
         enemyBullets.forEach(enemyBullet => {
             enemyBullet.update(airplane);
         });
+
+        update_explosions();
         
         //Movimento do avião
         airplane.update(SPEED);
@@ -849,8 +873,6 @@ function render()
         game.cameraHolder.position.z -= SPEED;
         game.light.position.z -= SPEED;
         game.lightTarget.position.z -= SPEED;
-        explosion1.update();
-
 
         //Movimento dos inimigos
         checkBoundariesAndCollisions();
