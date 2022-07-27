@@ -674,7 +674,7 @@ async function checkBoundariesAndCollisions() {
 
         enemies[i].update();
 
-        let enemy_bullet = enemies[i].shoot(1.4, airplane);
+        let enemy_bullet = await enemies[i].shoot(1.4, airplane);
         if (enemy_bullet) {
             game.addOnScene(enemy_bullet.sphere);
             enemyBullets.push(enemy_bullet);

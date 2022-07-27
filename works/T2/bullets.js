@@ -109,13 +109,28 @@ export class EnemyBullet {
 }
 
 export class GroundAirEnemyMissile {
-    constructor(speed, color = null) {
+    constructor(model, speed, color = null) {
         this.geometry = new THREE.ConeGeometry( 1, 3, 16 );
-        this.material = new THREE.MeshLambertMaterial( { color: color ? color : 0x49fc73 } );
+        this.material = new THREE.MeshLambertMaterial( {
+            color: 0x49fc73,
+            transparent: model ? true : false,
+            opacity: 0
+        });
         this.sphere = new THREE.Mesh( this.geometry, this.material );
         this.speed = speed * 1.25;
         this.boundingBox = new THREE.Box3().setFromObject(this.sphere);
         this.onAirplaneHeight = false;
+
+        if (!model) {
+            this.model = null;
+            this.sphere.castShadow = true;
+            this.sphere.receiveShadow = true;
+        }
+        else {
+            this.model = model;
+            this.model.scale.set(8, 8, 8);
+            this.sphere.add(this.model);
+        }
         return;
     }
 

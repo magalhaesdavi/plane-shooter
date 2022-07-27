@@ -1,11 +1,37 @@
 import * as THREE from  'three';
 import { EnemyBullet, GroundAirEnemyMissile } from './bullets.js'
+import { GLTFLoader } from '../../build/jsm/loaders/GLTFLoader.js';
 // import { degreesToRadians } from '../../libs/util/util';
 
 function degreesToRadians(degrees)
 {
     var pi = Math.PI;
     return degrees * (pi/180);
+}
+
+const loader = new GLTFLoader();
+
+const loadModel = async (path='./assets/plane.obj', objectName="obj1") => {
+    let model = await loader.loadAsync(
+        path, 
+        null
+    );
+
+    model.scene.traverse( 
+        function ( child ) {
+            if ( child ) {
+                child.castShadow = true;
+            }
+        }
+    );
+
+    model.scene.traverse(
+        function( node ) {
+            if( node.material ) node.material.side = THREE.DoubleSide;
+        }
+    );
+
+    return model.scene;
 }
 
 {/**
@@ -336,9 +362,10 @@ export class GroundEnemy {
         this.boundingBox.copy(this.object.geometry.boundingBox).applyMatrix4(this.object.matrixWorld);
     }
 
-    shoot(speed, airplane) {
+    async shoot(speed, airplane) {
         if(this.shootPermission && this.object.position.z <= airplane.getPosition().z){
-            let bullet = new GroundAirEnemyMissile(speed);
+            let missileModel = await loadModel("./assets/missile.glb");
+            let bullet = new GroundAirEnemyMissile(missileModel, speed);
             bullet.create(this);
             this.shootPermission = false;
             return bullet;
