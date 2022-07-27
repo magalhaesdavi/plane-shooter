@@ -30,8 +30,14 @@ export class lineEnemy {
         }
         else {
             this.model = model;
-            this.model.scale.set(0.5, 0.5, 0.5);
-            this.model.rotateY(degreesToRadians(-90));
+            if (this.direction == 'vertical') {
+                this.model.scale.set(0.5, 0.5, 0.5);
+                this.model.rotateY(degreesToRadians(-90));
+            }
+            else {
+                this.model.scale.set(1.5, 1.5, 1.5);
+                this.model.rotateY(degreesToRadians(90));
+            }
             
             this.object.add(this.model);
         }
@@ -302,8 +308,7 @@ export class GroundEnemy {
         }
         else {
             this.model = model;
-            this.model.scale.set(6, 6, 6);
-            this.model.rotateY(degreesToRadians(-90));
+            this.model.scale.set(2.5, 2.5, 2.5);
             this.object.add(this.model);
         }
 

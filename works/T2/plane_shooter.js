@@ -83,7 +83,7 @@ async function spawnEnemy(type){
             );
         }
         else{
-            let lineEnemyModel = await game.loadModel('./assets/fighter2.gltf');
+            let lineEnemyModel = await game.loadModel('./assets/airplane.glb');
             var new_enemy = new lineEnemy(1, lineEnemyModel, 'horizontal');
             new_enemy.setPosition(
                 -170,
@@ -125,7 +125,7 @@ async function spawnEnemy(type){
         }
     }
     if (type == 'ground') {
-        let groundEnemyModel = await game.loadModel('./assets/fighter3.glb');
+        let groundEnemyModel = await game.loadModel('./assets/T90.glb');
         let new_enemy = new GroundEnemy(0, groundEnemyModel);
         new_enemy.setPosition(
             Math.ceil(Math.random() * 80) * (Math.round(Math.random()) ? 1 : -1),
@@ -548,11 +548,11 @@ function advance_level() {
     game.gameLevel++;
 }
 
-function make_explosion(enemy) {
+function make_explosion(object) {
     let temp_explosion = new Explosion(
-        enemy.getGeometry().position.x,
-        enemy.getGeometry().position.y,
-        enemy.getGeometry().position.z + 5
+        object.getGeometry().position.x,
+        object.getGeometry().position.y,
+        object.getGeometry().position.z + 5
     );
     explosions.push(temp_explosion);
     game.addOnScene(temp_explosion.getGeometry());
