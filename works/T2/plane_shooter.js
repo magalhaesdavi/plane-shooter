@@ -189,6 +189,9 @@ class Game {
 
         this.loader = new GLTFLoader();
 
+        this.listener = new THREE.AudioListener();
+        this.camera.add( this.listener );
+
         // Creating a holder for the camera
         this.cameraHolder = new THREE.Object3D();
         this.cameraHolder.add(this.camera);
@@ -485,6 +488,7 @@ const defeat = () => {
     button2.style.display = "";
     painel.style.display = 'none';
     vidas.style.display = 'none';
+    make_sound("./assets/gameOver.wav");
     game.ended = true;
 }
 
@@ -539,6 +543,7 @@ const onStartButtonPressed = () => {
     controls.infoBox.style.display = "";
     painel.style.display = '';
     vidas.style.display = '';
+    make_sound("./assets/GameStart.wav");
 };
 
 button.addEventListener("click", onStartButtonPressed);
@@ -557,6 +562,7 @@ function make_explosion(object) {
     explosions.push(temp_explosion);
     game.addOnScene(temp_explosion.getGeometry());
     temp_explosion.getGeometry().lookAt(game.cameraHolder.position);
+    make_sound("./assets/explosion01.ogg");
 }
 
 function update_explosions() {
@@ -788,6 +794,7 @@ async function checkBoundariesAndCollisions() {
             //Animacao de colisao
             gsap.to(temp_life.scale, {x:0, y: 0, z: 0, duration: 0.25});
             airplane.increaseLife();
+            make_sound("./assets/lifeCatch.ogg");
             updateLives();
             await sleep(250);
             game.scene.remove(temp_life);
@@ -855,6 +862,18 @@ async function checkBoundariesAndCollisions() {
         }
     }
 
+}
+
+
+function make_sound (soundFile) {
+    const sound = new THREE.Audio( game.listener );
+    const audioLoader = new THREE.AudioLoader();
+    audioLoader.load(soundFile, function( buffer ) {
+        sound.setBuffer( buffer );
+        sound.setLoop( false );
+        sound.setVolume( 0.3 );
+        sound.play();
+    });
 }
 
 function render()
