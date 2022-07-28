@@ -112,6 +112,8 @@ function loadOBJFile(modelPath, modelName, desiredScale, angle, visibility)
 
 function loadGLBFile(modelPath, modelName, desiredScale, angle, visibility)
 {
+    let texture = new THREE.TextureLoader().load('./assets/3fea26f0_0.jpeg');
+
     var loader = new GLTFLoader( );
     loader.load( modelPath + modelName + '.glb', function ( gltf ) {
     var obj = gltf.scene;
@@ -124,7 +126,7 @@ function loadGLBFile(modelPath, modelName, desiredScale, angle, visibility)
     });
     obj.traverse( function( node )
     {
-        if( node.material ) node.material.side = THREE.DoubleSide;
+        if( node.material ) node.material.map = texture; //node.material.side = THREE.DoubleSide;
     });
 
     var obj = normalizeAndRescale(obj, desiredScale);
