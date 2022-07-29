@@ -3,18 +3,15 @@ import KeyboardState from '../../libs/util/KeyboardState.js';
 import {
 	initRenderer, 
 	initCamera,
-	initDefaultBasicLight,
-	initBasicMaterial,
 	InfoBox,
 	onWindowResize,
     degreesToRadians,
-	createGroundPlaneWired,
     radiansToDegrees
 } from "../../libs/util/util.js";
 import { SecondaryBox } from './helper.js';
 import { GLTFLoader } from '../../build/jsm/loaders/GLTFLoader.js';
 
-import { Scenario } from './scenario.js';
+import { Scenario, Grass } from './scenario.js';
 import { Airplane } from './plane.js';
 import { lineEnemy, archEnemy, diagonalEnemy, GroundEnemy } from './enemies.js';
 import { Life } from './life.js';
@@ -211,7 +208,7 @@ class Game {
         this.lifeSpawnWait = 8000;    
     }
 
-    init(airplane, scenario) {
+    init(airplane, scenario, leftGrass) {
         this.camera.lookAt(0, 0, 0);
         this.camera.up.set( 0, 1, 0 );
         this.cameraHolder.position.set(0, CAMERA_HEIGHT, 100);
@@ -223,12 +220,17 @@ class Game {
         this.scene.add(scenario.ground_plane);
         this.scene.add(scenario.second_ground_plane);
         this.scene.add(scenario.water);
+
+        this.scene.add(leftGrass.ground_plane);
+        this.scene.add(leftGrass.second_ground_plane);
+        this.scene.add(rightGrass.ground_plane);
+        this.scene.add(rightGrass.second_ground_plane);
         
         this.scene.add(airplane.getGeometry());
         airplane.setInitialOrResetPosition();
     }
 
-    reset(airplane, scenario) {
+    reset(airplane) {
         this.cameraHolder.position.set(0, CAMERA_HEIGHT, 100);
         this.light.position.set(0, 50, 30);
         this.lightTarget.position.set(0, 10, -20);
@@ -352,13 +354,15 @@ let keyboard = new KeyboardState();
 
 // Create the ground plane
 let main_scenario = new Scenario(600, 600);
+let leftGrass = new Grass(200, 600, -1);
+let rightGrass = new Grass(200, 600, 1);
 
 // Create plane
 let airplaneModel = await game.loadModel('./assets/plane.glb');
 let airplane = new Airplane(airplaneModel);
 
 // Initializing the game
-game.init(airplane, main_scenario);
+game.init(airplane, main_scenario, leftGrass, rightGrass);
 
 let controls = new InfoBox();
 controls.add("Plane Shooter");
@@ -495,7 +499,9 @@ const defeat = () => {
 
 function fullReset() {
     main_scenario.reset();
-    game.reset(airplane, main_scenario);
+    leftGrass.reset();
+    rightGrass.reset();
+    game.reset(airplane);
     game.gameLevel = 0;
     clearGeometryArray(bullets);
     clearGeometryArray(enemies);
@@ -896,6 +902,8 @@ function render()
         airplane.update(SPEED);
 
         main_scenario.update(game.cameraHolder);
+        leftGrass.update(game.cameraHolder);
+        rightGrass.update(game.cameraHolder);
         game.update();
 
         game.cameraHolder.position.z -= SPEED;
