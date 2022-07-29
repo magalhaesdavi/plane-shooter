@@ -222,6 +222,7 @@ class Game {
        
         this.scene.add(scenario.ground_plane);
         this.scene.add(scenario.second_ground_plane);
+        this.scene.add(scenario.water);
         
         this.scene.add(airplane.getGeometry());
         airplane.setInitialOrResetPosition();
