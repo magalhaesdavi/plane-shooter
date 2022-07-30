@@ -29,21 +29,15 @@ export class Scenario {
 		this.height = height;
 		this.width = width;
 
-		this.ground_plane =  createGroundPlane(height, width, 30, 30, 0x9c7f2f);
+		this.ground_plane =  createGroundPlane(height, width, 30, 30, 0x919ecf);
 		this.ground_plane.receiveShadow = true;
 		this.ground_plane.position.set(0, -20, 0);
 		this.ground_plane.rotation.x = Math.PI * (-0.5);
-
-		this.ground_plane.material.transparent = true;
-		this.ground_plane.material.opacity = 0;
 		
-		this.second_ground_plane = createGroundPlane(height, width, 30, 30,0x9c7f2f);
+		this.second_ground_plane = createGroundPlane(height, width, 30, 30,0x919ecf);
 		this.second_ground_plane.receiveShadow = true;
 		this.second_ground_plane.position.set(0, -20, 2*width);
 		this.second_ground_plane.rotation.x = Math.PI * (-0.5);
-
-		this.second_ground_plane.material.transparent = true;
-		this.second_ground_plane.material.opacity = 0;
 
 		this.waterGeometry = new THREE.PlaneGeometry(170, height);	
 
