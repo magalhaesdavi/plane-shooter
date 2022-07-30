@@ -95,3 +95,13 @@ h1 {
     height: 30px;
     margin-right: 5px;
 }
+
+/* COISA NOVA */
+#joystickWrapper1 {
+    pointer-events: auto;
+    position: absolute;       
+    bottom: 0;
+    left: 0;
+    display: block; 
+    touch-action: manipulation;
+}
