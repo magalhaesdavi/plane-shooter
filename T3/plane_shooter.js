@@ -24,7 +24,7 @@ const LIGHT_Z_DISTANCE = 70;
 const LIGHT_RANGE = 600;
 const AIR_ENEMIES_HEIGHT = 20;
 const SPEED = 1;
-const ENEMIES_X_LIMITS = [-150, 150]
+const ENEMIES_X_LIMITS = [-180, 180]
 
 let bullets = [];
 let enemyBullets = [];
@@ -126,7 +126,7 @@ async function spawnEnemy(type){
         let new_enemy = new GroundEnemy(0, groundEnemyModel);
         new_enemy.setPosition(
             Math.ceil(Math.random() * 80) * (Math.round(Math.random()) ? 1 : -1),
-            2.5,
+            9,
             game.cameraHolder.position.z - 400
         );
         enemies.push(new_enemy);
