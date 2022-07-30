@@ -54,14 +54,72 @@ var infoBox = new SecondaryBox("");
 var objectArray = new Array();
 var activeObject = 0; // View first object
 
-loadGLBFile('assets/', 'fighter3', 3.0, 0, true);
-loadGLBFile('assets/', 'plane', 3.0, 0, false);
-loadGLBFile('assets/', 'fighter1', 3.0, 0, false);
-loadGLTFFile('assets/', 'fighter2', 3.0, 0, false);
-loadGLBFile('assets/', 'fighter5', 3.0, 0, false);
-loadGLBFile('assets/', 'fighter6', 3.0, 0, false);
-loadGLBFile('assets/', 'missile', 3.0, 0, false);
-loadGLBFile('assets/', 'T90', 3.0, 0, false);
+const loadModel = async (path='./assets/plane.obj', visibility) => {
+    const loader = new GLTFLoader();
+
+    let model = await loader.loadAsync(
+        path, 
+        null
+    );
+
+    model.scene.traverse( 
+        function ( child ) {
+            if ( child ) {
+                child.castShadow = true;
+            }
+        }
+    );
+
+    model.scene.traverse(
+        function( node ) {
+            if( node.material ) node.material.side = THREE.DoubleSide;
+        }
+    );
+
+    // var obj = gltf.scene;
+    // obj.visible = visibility;
+    // obj.traverse( function ( child ) {
+    //     if ( child ) {
+    //         child.castShadow = true;
+    //     }
+    // });
+    // obj.traverse( function( node )
+    // {
+    //     if( node.material ) node.material.map = texture; //node.material.side = THREE.DoubleSide;
+    // });
+
+    model.scene.visible = visibility;
+    var obj = normalizeAndRescale(model.scene, 3.0);
+    var obj = fixPosition(obj);
+    obj.rotateY(degreesToRadians(0));
+
+    scene.add ( model.scene );
+    objectArray.push( model.scene );
+
+    return model.scene;
+}
+
+
+// loadGLBFile('assets/', 'fighter3', 3.0, 0, true);
+// // loadGLBFile('assets/', 'airplane', 3.0, 0, false);
+// loadModel("./assets/airplane.glb");
+// // loadGLBFile('assets/', 'plane', 3.0, 0, false);
+// loadGLBFile('assets/', 'fighter1', 3.0, 0, false);
+// loadGLTFFile('assets/', 'fighter2', 3.0, 0, false);
+// loadGLBFile('assets/', 'fighter5', 3.0, 0, false);
+// loadGLBFile('assets/', 'fighter6', 3.0, 0, false);
+// loadGLBFile('assets/', 'missile', 3.0, 0, false);
+// loadGLBFile('assets/', 'T90', 3.0, 0, false);
+
+loadModel("./assets/fighter1.glb", false);
+// loadModel("./assets/fighter2.gltf", false);
+// loadModel("./assets/fighter3.glb", true);
+loadModel("./assets/fighter5.glb", false);
+loadModel("./assets/fighter6.glb", false);
+loadModel("./assets/airplane.glb", true);
+loadModel("./assets/plane.glb", false);
+loadModel("./assets/missile.glb", false);
+loadModel("./assets/T90.glb", false);
 
 
 buildInterface();
@@ -235,7 +293,7 @@ function buildInterface()
     // GUI interface
     var gui = new GUI();
     gui.add(controls, 'type',
-        ['Object0', 'Object1', 'Object2', 'Object3', 'Object4', 'Object5', 'Object6', 'Object7'])
+        ['Object0', 'Object1', 'Object2', 'Object3', 'Object4', 'Object5', 'Object6'])
         .name("Change Object")
         .onChange(function(e) { controls.onChooseObject(); });
     gui.add(controls, 'viewAxes', false)
