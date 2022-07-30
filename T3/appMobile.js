@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import KeyboardState from '../../libs/util/KeyboardState.js';  
+import KeyboardState from '../libs/util/KeyboardState.js';  
 import {
 	initRenderer, 
 	initCamera,
@@ -7,10 +7,10 @@ import {
 	onWindowResize,
     degreesToRadians,
     radiansToDegrees
-} from "../../libs/util/util.js";
+} from "../libs/util/util.js";
 import { SecondaryBox } from './helper.js';
-import { GLTFLoader } from '../../build/jsm/loaders/GLTFLoader.js';
-import { Buttons } from '../../libs/other/buttons.js'; //COISA NOVA
+import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js';
+import { Buttons } from '../libs/other/buttons.js'; //COISA NOVA
 
 import { Scenario, Grass, Rocks } from './scenario.js';
 import { Airplane } from './plane.js';

@@ -11,7 +11,7 @@ import {
 import { SecondaryBox } from './helper.js';
 import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js';
 
-import { Scenario, Grass } from './scenario.js';
+import { Scenario, Grass, Rocks } from './scenario.js';
 import { Airplane } from './plane.js';
 import { lineEnemy, archEnemy, diagonalEnemy, GroundEnemy } from './enemies.js';
 import { Life } from './life.js';
@@ -214,7 +214,7 @@ class Game {
         this.lifeSpawnWait = 8000;    
     }
 
-    init(airplane, scenario, leftGrass) {
+    init(airplane, scenario, leftGrass, rightGrass, leftRock, rightRock) {
         this.camera.lookAt(0, 0, 0);
         this.camera.up.set( 0, 1, 0 );
         this.cameraHolder.position.set(0, CAMERA_HEIGHT, 100);
@@ -231,6 +231,10 @@ class Game {
         this.scene.add(leftGrass.second_ground_plane);
         this.scene.add(rightGrass.ground_plane);
         this.scene.add(rightGrass.second_ground_plane);
+        this.scene.add(leftRock.ground_plane);
+        this.scene.add(leftRock.second_ground_plane);
+        this.scene.add(rightRock.ground_plane);
+        this.scene.add(rightRock.second_ground_plane);
         
         this.scene.add(airplane.getGeometry());
         airplane.setInitialOrResetPosition();
@@ -362,13 +366,15 @@ let keyboard = new KeyboardState();
 let main_scenario = new Scenario(600, 600);
 let leftGrass = new Grass(200, 600, -1);
 let rightGrass = new Grass(200, 600, 1);
+let leftRock = new Rocks(50, 600, -1);
+let rightRock = new Rocks(50, 600, 1);
 
 // Create plane
 let airplaneModel = await game.loadModel('./assets/plane.glb');
 let airplane = new Airplane(airplaneModel);
 
 // Initializing the game
-game.init(airplane, main_scenario, leftGrass, rightGrass);
+game.init(airplane, main_scenario, leftGrass, rightGrass, leftRock, rightRock);
 
 let controls = new InfoBox();
 controls.add("Plane Shooter");
@@ -507,6 +513,8 @@ function fullReset() {
     main_scenario.reset();
     leftGrass.reset();
     rightGrass.reset();
+    leftRock.reset();
+    rightRock.reset();
     game.reset(airplane);
     game.gameLevel = 0;
     clearGeometryArray(bullets);
@@ -910,6 +918,8 @@ function render()
         main_scenario.update(game.cameraHolder);
         leftGrass.update(game.cameraHolder);
         rightGrass.update(game.cameraHolder);
+        leftRock.update(game.cameraHolder);
+        rightRock.update(game.cameraHolder);
         game.update();
 
         game.cameraHolder.position.z -= SPEED;
