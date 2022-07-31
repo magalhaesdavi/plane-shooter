@@ -25,7 +25,7 @@ const LIGHT_Z_DISTANCE = 70;
 const LIGHT_RANGE = 600;
 const AIR_ENEMIES_HEIGHT = 20;
 const SPEED = 1;
-const ENEMIES_X_LIMITS = [-250, 180]
+const ENEMIES_X_LIMITS = [-150, 150]
 
 let bullets = [];
 let enemyBullets = [];
@@ -33,6 +33,31 @@ let enemies = [];
 let lives = [];
 let timers = [];
 let explosions = []
+
+//COISA NOVA
+const loadingManager = new THREE.LoadingManager( () => {
+    let loadingScreen = document.getElementById( 'loading-screen' );
+    loadingScreen.style.transition = 0;
+    loadingScreen.style.setProperty('--speed1', '0');
+    loadingScreen.style.setProperty('--speed2', '0');
+    loadingScreen.style.setProperty('--speed3', '0');
+  
+    let button  = document.getElementById("myBtn")
+    button.style.backgroundColor = 'Red';
+    button.innerHTML = 'Click to Enter';
+    button.addEventListener("click", onButtonPressed);
+});
+
+function onButtonPressed() {
+    const loadingScreen = document.getElementById( 'loading-screen' );
+    loadingScreen.style.transition = 0;
+    loadingScreen.classList.add( 'fade-out' );
+    loadingScreen.addEventListener( 'transitionend', (e) => {
+      const element = e.target;
+      element.remove();  
+    });
+	onStartButtonPressed();
+}
 
 const buttons = new Buttons(onButtonDown, onButtonUp); //COISA NOVA
 const infoBox = new SecondaryBox("God Mode OFF");
@@ -85,7 +110,7 @@ async function spawnEnemy(type){
             let lineEnemyModel = await game.loadModel('./assets/airplane.glb');
             var new_enemy = new lineEnemy(1, lineEnemyModel, 'horizontal');
             new_enemy.setPosition(
-                -170,
+                -149,
                 AIR_ENEMIES_HEIGHT,
                 (game.cameraHolder.position.z - 250) + (-1 *  Math.random() * (game.cameraHolder.position.z - 70 ))
             );
@@ -162,8 +187,11 @@ class Game {
         this.running = false;
         this.paused = false;
         this.isGodMode = false;
-        this.scene = new THREE.Scene();    // Create main scene
-        this.renderer = initRenderer();    // Init a basic renderer
+        this.scene = new THREE.Scene();
+        this.renderer = initRenderer({
+            alpha:true,
+            transparent: true
+        });
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000); // Init camera in this position
@@ -186,7 +214,10 @@ class Game {
         this.scene.add(this.light);
         this.scene.add(this.light.target);
 
-        this.loader = new GLTFLoader();
+        //this.helper = new THREE.DirectionalLightHelper(this.light, 5);
+        //this.scene.add(this.helper);
+
+        this.loader = new GLTFLoader(loadingManager); //COISA NOVA
 
         this.listener = new THREE.AudioListener();
         this.camera.add( this.listener );
@@ -391,7 +422,7 @@ controls.add("* G to turn on/off God Mode");
 controls.add("* R to reset the game");
 controls.add("* Use arrows to move the airplane");
 controls.show();
-controls.infoBox.style.display = ""; //COISA NOVA
+controls.infoBox.style.display = "none"; //COISA NOVA
 
 render();
 
@@ -401,6 +432,10 @@ const sleep = (ms) => {
 
 const blocker = document.getElementById('blocker');
 const instructions = document.getElementById('instructions');
+const joystick = document.getElementById('joystickWrapper1'); //COISA NOVA
+const btnA = document.getElementById('A'); //COISA NOVA
+const btnB = document.getElementById('B'); //COISA NOVA
+const btnG = document.getElementById('G'); //COISA NOVA
 const h1 = document.getElementById('h1');
 const p1 = document.getElementById('p1');
 const p2 = document.getElementById('p2');
@@ -468,14 +503,17 @@ const defaultInterface = () => {
     blocker.style.display = 'block';
     instructions.style.display = '';
     h1.innerHTML = "Instructions";
-    p1.innerHTML = "Move: ARROWS";
-    p2.innerHTML = "Shoot: CTRL/SPACE";
+    p1.innerHTML = "Move: Joystick"; //COISA NOVA
+    p2.innerHTML = "Shoot: A/B"; //COISA NOVA
     p3.innerHTML = "God Mode: G";
-    p4.innerHTML = "Pause/Start: P";
-    p5.innerHTML = "Reset Game: R";
+    p4.innerHTML = ""; //COISA NOVA
+    p5.innerHTML = ""; //COISA NOVA
     button.style.display = "";
     button2.style.display = 'none';
-    controls.infoBox.style.display = ""; //COISA NOVA
+    controls.infoBox.style.display = "none"; //COISA NOVA
+    btnA.style.display = "none"; //COISA NOVA
+    btnB.style.display = "none"; //COISA NOVA
+    btnG.style.display = "none"; //COISA NOVA
     painel.style.display = 'none';
     vidas.style.display = 'none';
     updateLives();
@@ -493,6 +531,10 @@ const victory = () => {
     button.style.display = "none";
     button2.style.display = '';
     painel.style.display = 'none';
+    joystick.style.display = "none"; //COISA NOVA
+    btnA.style.display = "none"; //COISA NOVA
+    btnB.style.display = "none"; //COISA NOVA
+    btnG.style.display = "none"; //COISA NOVA
     vidas.style.display = 'none';
     game.ended = true;
 }
@@ -509,6 +551,10 @@ const defeat = () => {
     button.style.display = "none";
     button2.style.display = "";
     painel.style.display = 'none';
+    joystick.style.display = "none"; //COISA NOVA
+    btnA.style.display = "none"; //COISA NOVA
+    btnB.style.display = "none"; //COISA NOVA
+    btnG.style.display = "none"; //COISA NOVA
     vidas.style.display = 'none';
     make_sound("./assets/gameOver.wav");
     game.ended = true;
@@ -550,6 +596,7 @@ const finishGame = () => {
 const onStartButtonPressed = () => {
     instructions.style.display = 'none';
     blocker.style.display = 'none';
+    joystick.style.display = ""; //COISA NOVA
     if(!game.started){
         var levelOneTimer = new Timer(advance_level, sumFirstElements(game.levelDuration, 1));
         timers[2] = levelOneTimer;
@@ -569,6 +616,10 @@ const onStartButtonPressed = () => {
     controls.infoBox.style.display = "none"; //COISA NOVA
     painel.style.display = '';
     vidas.style.display = '';
+    joystick.style.display = ""; //COISA NOVA
+    btnA.style.display = ""; //COISA NOVA
+    btnB.style.display = ""; //COISA NOVA
+    btnG.style.display = ""; //COISA NOVA
     make_sound("./assets/GameStart.wav");
 };
 
@@ -637,9 +688,13 @@ async function keyboardUpdate() {
         fullReset();
         blocker.style.display = 'block';
         instructions.style.display = '';
-        controls.infoBox.style.display = ""; //COISA NOVA
+        controls.infoBox.style.display = "none"; //COISA NOVA
         painel.style.display = 'none';
         vidas.style.display = 'none';
+        joystick.style.display = "none"; //COISA NOVA
+        btnA.style.display = "none"; //COISA NOVA
+        btnB.style.display = "none"; //COISA NOVA
+        btnG.style.display = "none"; //COISA NOVA
         updateLives();
     }
     // Airplane controls
@@ -890,9 +945,10 @@ async function checkBoundariesAndCollisions() {
 
 }
 
+
 function make_sound (soundFile) {
     const sound = new THREE.Audio( game.listener );
-    const audioLoader = new THREE.AudioLoader();
+    const audioLoader = new THREE.AudioLoader(loadingManager); //COISA NOVA
     audioLoader.load(soundFile, function( buffer ) {
         sound.setBuffer( buffer );
         sound.setLoop( false );
@@ -917,8 +973,8 @@ function render()
         update_explosions();
         
         //Movimento do avião
-        airplane.update(SPEED);
         updatePlayer(); //COISA NOVA
+        airplane.update(SPEED);
 
         main_scenario.update(game.cameraHolder);
         leftGrass.update(game.cameraHolder);
@@ -948,6 +1004,7 @@ function render()
     requestAnimationFrame(render);
     game.renderer.render(game.scene, game.camera) // Render scene
 }
+
 
 //COISA NOVA
 function updatePlayer(){

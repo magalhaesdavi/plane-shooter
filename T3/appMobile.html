@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="../html/resources/default.css">
     <link rel="stylesheet" href="styles.css">
     <!-- COISA NOVA -->
-    <link rel="stylesheet" href="../libs/other/buttons.css">
+    <link rel="stylesheet" href="../html/resources/loadingScreen.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">  
 </head>
 
@@ -20,17 +20,24 @@
     <!-- COISA NOVA -->
     <script src="../libs/other/nipplejs.js"></script>
 
-    <div id="blocker" class="w3-display-container">
+    <!-- COISA NOVA -->
+    <section id="loading-screen">
+        <div id="loader"></div>
+        <button class="button" id="myBtn">Loading...</button>
+    </section>
+
+    <div id="blocker" style="display: none;" class="w3-display-container">
         <div id="instructions" class="w3-display-middle w3-center w3-white w3-opacity">
             <h1 id="h1">Instructions</h1>
-            <p id="p1">Move: ARROWS</p>
-            <p id="p2">Shoot: CTRL/SPACE</pi>
+            <p id="p1">Move: Joystick</p>
+            <p id="p2">Shoot: A/B</pi>
             <p id="p3">God Mode: G</p>
             <br>
-            <p id="p4">Pause/Start: P</p>
-            <p id="p5">Reset Game: R</p>
-            <button class="button" id="btn">Click to Start Game!</button>
-            <button style="display: none;" class="button" id="btn2">Return to First Screen</button>
+            <!-- COISA NOVA -->
+            <p id="p4"></p>
+            <p id="p5"></p>
+            <button class="buttonMenu" id="btn">Click to Start Game!</button>
+            <button style="display: none;" class="buttonMenu" id="btn2">Return to First Screen</button>
         </div>
     </div>
 
@@ -45,12 +52,12 @@
     </div>
 
     <!-- COISA NOVA -->
-    <div id="joystickWrapper1"></div>
+    <div style="display: none;" id="joystickWrapper1"></div>
 
     <!-- COISA NOVA -->
-    <button style="bottom:20px; right: 120px;" id="A" class="video-game-button">A</button>
+    <button style="bottom:120px; right: 20px;" id="A" class="video-game-button">A</button>
     <button style="bottom:20px; right: 20px;" id="B" class="video-game-button">B</button>
-    <button style="top:20px; right: 20px;" id="G" class="video-game-button">G</button>
+    <button style="top:100px; left: 20px;" id="G" class="video-game-button">G</button>
 
     <div id="webgl-output">     
         <script type="module" src="appMobile.js"></script>
