@@ -24,7 +24,7 @@ const LIGHT_Z_DISTANCE = 70;
 const LIGHT_RANGE = 600;
 const AIR_ENEMIES_HEIGHT = 20;
 const SPEED = 1;
-const ENEMIES_X_LIMITS = [-150, 150]
+const ENEMIES_X_LIMITS = [-180, 180]
 
 let bullets = [];
 let enemyBullets = [];
@@ -126,7 +126,7 @@ async function spawnEnemy(type){
         let new_enemy = new GroundEnemy(0, groundEnemyModel);
         new_enemy.setPosition(
             Math.ceil(Math.random() * 80) * (Math.round(Math.random()) ? 1 : -1),
-            2.5,
+            9,
             game.cameraHolder.position.z - 400
         );
         enemies.push(new_enemy);
@@ -158,6 +158,7 @@ class Game {
         this.started = false;
         this.ended = false;
         this.running = false;
+        this.firstStart = true;
         this.paused = false;
         this.isGodMode = false;
         this.scene = new THREE.Scene();
@@ -352,6 +353,14 @@ class Game {
 
 let game = new Game();
 
+const background_song = new THREE.Audio( game.listener );
+const audioLoader = new THREE.AudioLoader();
+audioLoader.load("./assets/background-song.mp3", function( buffer ) {
+                background_song.setBuffer( buffer );
+                background_song.setLoop( false );
+                background_song.setVolume( 0.1 );
+});
+
 // Listen window size changes
 window.addEventListener(
     'resize',
@@ -493,6 +502,7 @@ const victory = () => {
 }
 
 const defeat = () => {
+    background_song.stop();
     blocker.style.display = 'block';
     instructions.style.display = '';
     h1.innerHTML = "DEFEAT!";
@@ -505,7 +515,7 @@ const defeat = () => {
     button2.style.display = "";
     painel.style.display = 'none';
     vidas.style.display = 'none';
-    make_sound("./assets/gameOver.wav");
+    make_sound("./assets/gameOver.wav", 0.3);
     game.ended = true;
 }
 
@@ -517,6 +527,7 @@ function fullReset() {
     rightRock.reset();
     game.reset(airplane);
     game.gameLevel = 0;
+    game.firstStart = false;
     clearGeometryArray(bullets);
     clearGeometryArray(enemies);
     clearGeometryArray(enemyBullets);
@@ -560,11 +571,20 @@ const onStartButtonPressed = () => {
         timers[7] = levelSixTimer;
         game.started = true;
     }
+
+    if(game.firstStart){
+        setTimeout(() => {
+            background_song.play();
+        }, 10000);
+    }
+    else{
+        background_song.play();
+    }
     game.running = !game.running;
     controls.infoBox.style.display = "";
     painel.style.display = '';
     vidas.style.display = '';
-    make_sound("./assets/GameStart.wav");
+    make_sound("./assets/GameStart.wav", 0.3);
 };
 
 button.addEventListener("click", onStartButtonPressed);
@@ -583,7 +603,7 @@ function make_explosion(object) {
     explosions.push(temp_explosion);
     game.addOnScene(temp_explosion.getGeometry());
     temp_explosion.getGeometry().lookAt(game.cameraHolder.position);
-    make_sound("./assets/explosion01.ogg");
+    make_sound("./assets/explosion01.ogg", 0.3);
 }
 
 function update_explosions() {
@@ -615,6 +635,7 @@ async function keyboardUpdate() {
                         timers[i].pause();
                     }
                 }
+                background_song.pause();
                 game.paused = true;
             }
             else{
@@ -623,6 +644,7 @@ async function keyboardUpdate() {
                         timers[i].resume();
                     }
                 }
+                background_song.play();
                 game.paused = false;
             }
             game.running = !game.running;
@@ -636,6 +658,7 @@ async function keyboardUpdate() {
         painel.style.display = 'none';
         vidas.style.display = 'none';
         updateLives();
+        background_song.stop();
     }
     // Airplane controls
     if ( keyboard.pressed("left") && game.running) { //MOVE AVIAO PARA ESQUERDA
@@ -684,6 +707,7 @@ async function keyboardUpdate() {
         if (bomb != null) {
             bullets.push(bomb);
         }
+        make_sound("./assets/shot2.mp3", 0.1);
     }
     if (keyboard.pressed("ctrl") && game.running ) { //TIRO MISSEIS
         airplane.burst = true;
@@ -691,6 +715,7 @@ async function keyboardUpdate() {
         if(bullet != null) {
             bullets.push(bullet);
         }
+        make_sound("./assets/shot3.mp3", 0.05);
     }
     if (keyboard.down("ctrl") && game.running ) { //TIRO MISSEIS
         airplane.burst = false;
@@ -815,7 +840,7 @@ async function checkBoundariesAndCollisions() {
             //Animacao de colisao
             gsap.to(temp_life.scale, {x:0, y: 0, z: 0, duration: 0.25});
             airplane.increaseLife();
-            make_sound("./assets/lifeCatch.ogg");
+            make_sound("./assets/lifeCatch.ogg", 0.3);
             updateLives();
             await sleep(250);
             game.scene.remove(temp_life);
@@ -886,13 +911,13 @@ async function checkBoundariesAndCollisions() {
 }
 
 
-function make_sound (soundFile) {
+function make_sound (soundFile, volume) {
     const sound = new THREE.Audio( game.listener );
     const audioLoader = new THREE.AudioLoader();
     audioLoader.load(soundFile, function( buffer ) {
         sound.setBuffer( buffer );
         sound.setLoop( false );
-        sound.setVolume( 0.3 );
+        sound.setVolume( volume );
         sound.play();
     });
 }
