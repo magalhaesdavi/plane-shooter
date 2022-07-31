@@ -1164,7 +1164,31 @@ function onButtonDown(event) {
             break;    
         case "G":
             game.godMode();
-            break;    
+            break;
+        case "P":
+            if(game.started){
+                if(!game.paused){
+                    for(var i = 0; i < timers.length; i++){
+                        if(timers[i] != null){
+                            timers[i].pause();
+                        }
+                    }
+                    background_song.pause();
+                    game.paused = true;
+                }
+                else{
+                    for(var i = 0; i < timers.length; i++){
+                        if(timers[i] != null){
+                            timers[i].resume();
+                        }
+                    }
+                    if(!background_song.isPlaying){
+                        background_song.play();
+                    }
+                    game.paused = false;
+                }
+                game.running = !game.running;
+            }
     }
 }
 
