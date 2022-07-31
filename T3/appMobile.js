@@ -10,7 +10,7 @@ import {
 } from "../libs/util/util.js";
 import { SecondaryBox } from './helper.js';
 import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js';
-import { Buttons } from '../libs/other/buttons.js'; //COISA NOVA
+import { Buttons } from './helper.js'; //COISA NOVA
 
 import { Scenario, Grass, Rocks } from './scenario.js';
 import { Airplane } from './plane.js';
