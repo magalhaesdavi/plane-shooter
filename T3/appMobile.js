@@ -605,6 +605,7 @@ function fullReset() {
 const finishGame = () => {
     fullReset();
     victory();
+    background_song.stop()
 };
 
 const onStartButtonPressed = () => {
@@ -629,11 +630,15 @@ const onStartButtonPressed = () => {
 
     if(game.firstStart){
         setTimeout(() => {
-            background_song.play();
+            if(!background_song.isPlaying){
+                background_song.play();
+            }
         }, 10000);
     }
     else{
-        background_song.play();
+        if(!background_song.isPlaying){
+            background_song.play();
+        }
     }
     game.running = !game.running;
     controls.infoBox.style.display = "none"; //COISA NOVA
@@ -694,7 +699,9 @@ async function keyboardUpdate() {
                         timers[i].pause();
                     }
                 }
-                background_song.pause();
+                if(background_song.isPlaying){
+                    background_song.pause();
+                }
                 game.paused = true;
             }
             else{
@@ -703,7 +710,9 @@ async function keyboardUpdate() {
                         timers[i].resume();
                     }
                 }
-                background_song.play();
+                if(!background_song.isPlaying){
+                    background_song.play();
+                }
                 game.paused = false;
             }
             game.running = !game.running;
