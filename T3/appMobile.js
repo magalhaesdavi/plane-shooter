@@ -1134,7 +1134,7 @@ async function addJoysticks(){
         else if (turn < 0)
             lftValue = Math.abs(turn)
     })
-  
+
     joystickL.on('end', async function (evt) {
         bkdValue = 0
         fwdValue = 0
@@ -1155,12 +1155,14 @@ function onButtonDown(event) {
             if(bullet != null) {
                 bullets.push(bullet);
             }
+            make_sound("./assets/shot3.mp3", 0.05);
             break;
         case "B":
             let bomb = airplane.bomb(SPEED, airplane, game);
             if (bomb != null) {
                 bullets.push(bomb);
             }
+            make_sound("./assets/shot2.mp3", 0.1);
             break;    
         case "G":
             game.godMode();
