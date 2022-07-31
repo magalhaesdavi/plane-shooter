@@ -19,7 +19,7 @@ import { Life } from './life.js';
 import { GroundAirEnemyMissile } from './bullets.js';
 import { Explosion } from './explosion.js';
 
-const CAMERA_HEIGHT = 110;
+const CAMERA_HEIGHT = 135;
 const LIGHT_HEIGHT = 130;
 const LIGHT_Z_DISTANCE = 70;
 const LIGHT_RANGE = 600;
@@ -104,7 +104,7 @@ async function spawnEnemy(type){
             new_enemy.setPosition(Math.ceil(
                 Math.random() * 70) * (Math.round(Math.random()) ? 1 : -1),
                 AIR_ENEMIES_HEIGHT,
-                game.cameraHolder.position.z - 300
+                game.cameraHolder.position.z - 350
             );
         }
         else{
@@ -113,7 +113,7 @@ async function spawnEnemy(type){
             new_enemy.setPosition(
                 -149,
                 AIR_ENEMIES_HEIGHT,
-                (game.cameraHolder.position.z - 250) + (-1 *  Math.random() * (game.cameraHolder.position.z - 70 ))
+                (game.cameraHolder.position.z - 300) + (-1 *  Math.random() * (game.cameraHolder.position.z - 100 ))
             );
         }
         enemies.push(new_enemy);
@@ -123,13 +123,13 @@ async function spawnEnemy(type){
         let archEnemyModel = await game.loadModel('./assets/fighter1.glb');
         if(Math.random() >= 0.5){
             let new_enemy = new archEnemy('left', archEnemyModel);
-            new_enemy.setPosition(-170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 260);
+            new_enemy.setPosition(-170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 350);
             enemies.push(new_enemy);
             game.scene.add(new_enemy.getGeometry());
         }
         else{
             let new_enemy = new archEnemy('right', archEnemyModel);
-            new_enemy.setPosition(170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 260);
+            new_enemy.setPosition(170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 350);
             enemies.push(new_enemy);
             game.scene.add(new_enemy.getGeometry());
         }
@@ -138,13 +138,13 @@ async function spawnEnemy(type){
         let diagonalEnemyModel = await game.loadModel('./assets/fighter5.glb');
         if(Math.random() >= 0.5){
             var new_enemy = new diagonalEnemy('left', 1, diagonalEnemyModel);
-            new_enemy.setPosition(-170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 250);
+            new_enemy.setPosition(-170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 350);
             enemies.push(new_enemy);
             game.scene.add(new_enemy.getGeometry());
         }
         else{
             var new_enemy = new diagonalEnemy('right', 1, diagonalEnemyModel);
-            new_enemy.setPosition(170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 250);
+            new_enemy.setPosition(170, AIR_ENEMIES_HEIGHT, game.cameraHolder.position.z - 350);
             enemies.push(new_enemy);
             game.scene.add(new_enemy.getGeometry());
         }
@@ -266,7 +266,7 @@ class Game {
         this.scene.add(rightRock.second_ground_plane);
         
         this.scene.add(airplane.getGeometry());
-        airplane.setInitialOrResetPosition();
+        airplane.mobileSetInitialOrResetPosition();
     }
 
     reset(airplane) {
@@ -275,7 +275,7 @@ class Game {
         this.lightTarget.position.set(0, 10, -20);
         
         this.scene.add(airplane.getGeometry());
-        airplane.setInitialOrResetPosition(false);
+        airplane.mobileSetInitialOrResetPosition(false);
         this.started = false;
     }
 
@@ -725,7 +725,7 @@ async function keyboardUpdate() {
     }
     // Airplane controls
     if ( keyboard.pressed("left") && game.running) { //MOVE AVIAO PARA ESQUERDA
-        if ((airplane.getGeometry().position.x - game.cameraHolder.position.x) > -70 ) {
+        if ((airplane.getGeometry().position.x - game.cameraHolder.position.x) > -40 ) {
             airplane.getGeometry().translateX(-1);
             
             if (!airplane.isRotated) {
@@ -740,7 +740,7 @@ async function keyboardUpdate() {
         airplane.isRotated = false;
     }
     if ( keyboard.pressed("right") && game.running) { //MOVE AVIAO PARA DIREITA
-        if ((airplane.getGeometry().position.x - game.cameraHolder.position.x) < 70 ) {
+        if ((airplane.getGeometry().position.x - game.cameraHolder.position.x) < 40 ) {
             airplane.getGeometry().translateX(1);
 
             if (!airplane.isRotated) {
@@ -755,11 +755,11 @@ async function keyboardUpdate() {
         airplane.isRotated = false;
     }
     if ( keyboard.pressed("up") && game.running ) { //MOVE AVIAO PARA CIMA
-        if ((airplane.getGeometry().position.z - game.cameraHolder.position.z) > -200 )
+        if ((airplane.getGeometry().position.z - game.cameraHolder.position.z) > -350 )
             airplane.getGeometry().translateY(1);
     }
     if ( keyboard.pressed("down") && game.running ) { //MOVE AVIAO PARA BAIXO
-        if ((airplane.getGeometry().position.z - game.cameraHolder.position.z) < -50 )
+        if ((airplane.getGeometry().position.z - game.cameraHolder.position.z) < -59 )
             airplane.getGeometry().translateY(-1);
     }
     if (keyboard.down("G")) { //GOD MODE
@@ -965,7 +965,7 @@ async function checkBoundariesAndCollisions() {
 
     //Removendo mísseis que saíram da tela
     for(var i = 0; i < bullets.length; i++) {
-        if(bullets[i].getGeometry().position.z < (game.cameraHolder.position.z - 250) || bullets[i].getGeometry().position.y < -1) {
+        if(bullets[i].getGeometry().position.z < (game.cameraHolder.position.z - 350) || bullets[i].getGeometry().position.y < -1) {
             game.scene.remove(bullets[i].getGeometry());
             bullets.splice(i, 1);
         }
